@@ -1,0 +1,18 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  @apply bg-gray-100 text-gray-900 antialiased;
+}
+
+/* Touch-friendly minimum sizes */
+button, .touch-target {
+  min-height: 60px;
+  min-width: 60px;
+}
+
+button.touch-lg, .touch-target-lg {
+  min-height: 80px;
+  min-width: 80px;
+}
