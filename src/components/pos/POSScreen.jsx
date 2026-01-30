@@ -15,15 +15,15 @@ export default function POSScreen() {
   const navigate = useNavigate()
   const { products, loading } = useProducts()
   const { customers } = useCustomers()
-  const { items, customerId, customerName, discountAmount, discountPercentage, getSubtotal, getTotal, clearCart } = useCartStore()
+  const { items, customerId, customerName, discountAmount, discountPercentage, clearCart } = useCartStore()
   const [showPayment, setShowPayment] = useState(false)
   const [showCustomerSelect, setShowCustomerSelect] = useState(false)
   const [showDiscount, setShowDiscount] = useState(false)
   const [processing, setProcessing] = useState(false)
   const [toast, setToast] = useState(null)
 
-  const subtotal = getSubtotal()
-  const discount = discountAmount || (subtotal * (discountPercentage || 0)) / 100
+  const subtotal = items.reduce((sum, i) => sum + Number(i.lineTotal), 0)
+  const discount = discountAmount ?? (subtotal * (discountPercentage ?? 0)) / 100
   const total = Math.max(0, subtotal - discount)
   const canComplete = items.length > 0 && total >= 0
 

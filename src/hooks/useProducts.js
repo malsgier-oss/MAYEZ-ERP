@@ -1,6 +1,15 @@
 import { useState, useEffect } from 'react'
 import { supabase } from '../lib/supabase'
 
+const FETCH_TIMEOUT_MS = 15_000
+
+function withTimeout(promise, ms, message = 'Request timed out') {
+  return Promise.race([
+    promise,
+    new Promise((_, reject) => setTimeout(() => reject(new Error(message)), ms)),
+  ])
+}
+
 export function useProducts() {
   const [products, setProducts] = useState([])
   const [loading, setLoading] = useState(true)
@@ -9,18 +18,25 @@ export function useProducts() {
   const fetchProducts = async () => {
     setLoading(true)
     setError(null)
-    const { data, error: e } = await supabase
-      .from('products')
-      .select('*')
-      .eq('is_active', true)
-      .order('name')
-    if (e) {
-      setError(e.message)
+    try {
+      const query = supabase
+        .from('products')
+        .select('*')
+        .eq('is_active', true)
+        .order('name')
+      const { data, error: e } = await withTimeout(query, FETCH_TIMEOUT_MS, 'Products load timed out. Check your connection and Supabase.')
+      if (e) {
+        setError(e.message)
+        setProducts([])
+      } else {
+        setProducts(data || [])
+      }
+    } catch (err) {
+      setError(err?.message || 'Failed to load products')
       setProducts([])
-    } else {
-      setProducts(data || [])
+    } finally {
+      setLoading(false)
     }
-    setLoading(false)
   }
 
   useEffect(() => {

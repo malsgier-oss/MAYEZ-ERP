@@ -19,7 +19,8 @@ Sales-first ERP – Phase 1 MVP: POS, products, customers, invoices, inventory, 
 
 2. **Supabase**
    - Create a project at [supabase.com](https://supabase.com).
-   - In the SQL Editor, run the contents of `supabase/schema.sql`.
+   - In the SQL Editor, run in order: `supabase/schema.sql`, `supabase/add_refunded_status.sql`, `supabase/add_customers_debt.sql`.
+   - Optional: run `supabase/seed_example.sql` for sample products/customers (or add your own data).
    - In Project Settings → API, copy the project URL and anon key.
 
 3. **Environment**
@@ -45,6 +46,10 @@ Sales-first ERP – Phase 1 MVP: POS, products, customers, invoices, inventory, 
 - **Inventory** – Stock list, low-stock filter, adjust stock with reason, movement history.
 - **Reports** – Daily sales summary, customer debt, low stock, top 10 products.
 - **Settings** – Business name, address, currency symbol, receipt footer (stored in browser).
+
+## Staff guide
+
+See `STAFF_HELP.md` for a one-page staff reference (print or export to PDF).
 
 ## Design doc
 

@@ -2,9 +2,9 @@ import { useCartStore } from '../../store/cartStore'
 import { formatCurrency } from '../../utils/currency'
 
 export default function Cart() {
-  const { items, customerName, discountAmount, discountPercentage, updateQuantity, removeItem, clearCart, getSubtotal, getTotal, setDiscount } = useCartStore()
-  const subtotal = getSubtotal()
-  const discount = discountAmount || (subtotal * (discountPercentage || 0)) / 100
+  const { items, customerName, discountAmount, discountPercentage, updateQuantity, removeItem, clearCart } = useCartStore()
+  const subtotal = items.reduce((sum, i) => sum + Number(i.lineTotal), 0)
+  const discount = discountAmount ?? (subtotal * (discountPercentage ?? 0)) / 100
   const total = Math.max(0, subtotal - discount)
 
   const handleClear = () => {

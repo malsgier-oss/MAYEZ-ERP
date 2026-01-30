@@ -1,6 +1,15 @@
 import { useState, useEffect } from 'react'
 import { supabase } from '../lib/supabase'
 
+const FETCH_TIMEOUT_MS = 15_000
+
+function withTimeout(promise, ms, message = 'Request timed out') {
+  return Promise.race([
+    promise,
+    new Promise((_, reject) => setTimeout(() => reject(new Error(message)), ms)),
+  ])
+}
+
 export function useInvoices(filters = {}) {
   const [invoices, setInvoices] = useState([])
   const [loading, setLoading] = useState(true)
@@ -9,19 +18,25 @@ export function useInvoices(filters = {}) {
   const fetchInvoices = async () => {
     setLoading(true)
     setError(null)
-    let q = supabase.from('invoices').select('*, customers(name)').order('invoice_date', { ascending: false })
-    if (filters.customerId) q = q.eq('customer_id', filters.customerId)
-    if (filters.status) q = q.eq('status', filters.status)
-    if (filters.fromDate) q = q.gte('invoice_date', filters.fromDate)
-    if (filters.toDate) q = q.lte('invoice_date', filters.toDate)
-    const { data, error: e } = await q.limit(200)
-    if (e) {
-      setError(e.message)
+    try {
+      let q = supabase.from('invoices').select('*, customers(name)').order('invoice_date', { ascending: false })
+      if (filters.customerId) q = q.eq('customer_id', filters.customerId)
+      if (filters.status) q = q.eq('status', filters.status)
+      if (filters.fromDate) q = q.gte('invoice_date', filters.fromDate)
+      if (filters.toDate) q = q.lte('invoice_date', filters.toDate)
+      const { data, error: e } = await withTimeout(q.limit(200), FETCH_TIMEOUT_MS, 'Invoices load timed out. Check your connection and Supabase.')
+      if (e) {
+        setError(e.message)
+        setInvoices([])
+      } else {
+        setInvoices(data || [])
+      }
+    } catch (err) {
+      setError(err?.message || 'Failed to load invoices')
       setInvoices([])
-    } else {
-      setInvoices(data || [])
+    } finally {
+      setLoading(false)
     }
-    setLoading(false)
   }
 
   useEffect(() => {
@@ -82,4 +97,76 @@ export async function recordPayment(payment) {
   const status = paid >= total ? 'paid' : paid > 0 ? 'partial' : 'unpaid'
   await supabase.from('invoices').update({ paid_amount: paid, status, updated_at: new Date().toISOString() }).eq('id', payment.invoice_id)
   return data
+}
+
+/**
+ * Process a return for an invoice: restore stock, update invoice status.
+ * @param {string} invoiceId - Invoice ID
+ * @param {Array} returnItems - Array of invoice_items to return (must have id, product_id, quantity, line_total)
+ * @param {string} reason - Return reason (e.g. damaged, wrong_item, customer_changed_mind)
+ */
+export async function processInvoiceReturn(invoiceId, returnItems, reason) {
+  const { data: invoice, error: invoiceError } = await supabase
+    .from('invoices')
+    .select('*, items:invoice_items(*)')
+    .eq('id', invoiceId)
+    .single()
+
+  if (invoiceError) throw invoiceError
+  if (!invoice) throw new Error('Invoice not found')
+
+  const invoiceItems = invoice.items || []
+
+  for (const item of returnItems) {
+    await recordStockMovement(
+      item.product_id,
+      item.quantity,
+      'return',
+      'invoice',
+      invoiceId,
+      null,
+      `Return from invoice #${invoice.invoice_number} - Reason: ${reason}`,
+    )
+  }
+
+  const returnAmount = returnItems.reduce((sum, item) => sum + Number(item.line_total), 0)
+  const isFullReturn =
+    invoiceItems.length === returnItems.length &&
+    invoiceItems.every((invItem) =>
+      returnItems.some(
+        (retItem) => retItem.id === invItem.id && Number(retItem.quantity) === Number(invItem.quantity),
+      ),
+    )
+
+  const newStatus = isFullReturn ? 'refunded' : invoice.status
+
+  const { error: updateError } = await supabase
+    .from('invoices')
+    .update({ status: newStatus, updated_at: new Date().toISOString() })
+    .eq('id', invoiceId)
+
+  if (updateError) throw updateError
+
+  // Reduce customer debt when returning items from an unpaid or partial invoice
+  if (invoice.status === 'unpaid' || invoice.status === 'partial') {
+    const { data: customer, error: customerError } = await supabase
+      .from('customers')
+      .select('debt')
+      .eq('id', invoice.customer_id)
+      .single()
+
+    if (!customerError && customer != null) {
+      const currentDebt = Number(customer.debt) || 0
+      const newDebt = Math.max(0, currentDebt - returnAmount)
+
+      const { error: debtError } = await supabase
+        .from('customers')
+        .update({ debt: newDebt })
+        .eq('id', invoice.customer_id)
+
+      if (debtError) throw debtError
+    }
+  }
+
+  return { success: true, returnAmount, isFullReturn, newStatus }
 }

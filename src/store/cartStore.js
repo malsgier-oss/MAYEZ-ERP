@@ -6,7 +6,7 @@ import { persist } from 'zustand/middleware'
  */
 export const useCartStore = create(
   persist(
-    (set) => ({
+    (set, get) => ({
       items: [],
       customerId: null,
       customerName: null,
@@ -80,23 +80,15 @@ export const useCartStore = create(
         }),
 
       getSubtotal: () => {
-        let subtotal = 0
-        set((state) => {
-          subtotal = state.items.reduce((sum, i) => sum + Number(i.lineTotal), 0)
-          return {}
-        })
-        return subtotal
+        const state = get()
+        return state.items.reduce((sum, i) => sum + Number(i.lineTotal), 0)
       },
 
       getTotal: () => {
-        let total = 0
-        set((state) => {
-          const subtotal = state.items.reduce((sum, i) => sum + Number(i.lineTotal), 0)
-          const discount = state.discountAmount || (subtotal * (state.discountPercentage || 0)) / 100
-          total = Math.max(0, subtotal - discount)
-          return {}
-        })
-        return total
+        const state = get()
+        const subtotal = state.items.reduce((sum, i) => sum + Number(i.lineTotal), 0)
+        const discount = state.discountAmount || (subtotal * (state.discountPercentage || 0)) / 100
+        return Math.max(0, subtotal - discount)
       },
     }),
     { name: 'mayez-cart' }
