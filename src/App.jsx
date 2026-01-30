@@ -1,8 +1,10 @@
 import { Routes, Route } from 'react-router-dom'
 import Layout from './components/shared/Layout'
+import DashboardScreen from './components/dashboard/DashboardScreen'
 import POSScreen from './components/pos/POSScreen'
 import ProductList from './components/products/ProductList'
 import ProductForm from './components/products/ProductForm'
+import CategoryList from './components/categories/CategoryList'
 import CustomerList from './components/customers/CustomerList'
 import CustomerDetail from './components/customers/CustomerDetail'
 import CustomerForm from './components/customers/CustomerForm'
@@ -17,7 +19,9 @@ export default function App() {
     <Routes>
       <Route path="/" element={<Layout />}>
         <Route index element={<POSScreen />} />
+        <Route path="dashboard" element={<DashboardScreen />} />
         <Route path="products" element={<ProductList />} />
+        <Route path="categories" element={<CategoryList />} />
         <Route path="products/new" element={<ProductForm />} />
         <Route path="products/:id/edit" element={<ProductForm />} />
         <Route path="customers" element={<CustomerList />} />

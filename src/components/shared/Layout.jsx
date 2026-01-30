@@ -1,8 +1,10 @@
 import { Link, useLocation, Outlet } from 'react-router-dom'
 
 const navItems = [
+  { path: '/dashboard', label: 'Dashboard', icon: '🏠' },
   { path: '/', label: 'POS', icon: '🛒' },
   { path: '/products', label: 'Products', icon: '📦' },
+  { path: '/categories', label: 'Categories', icon: '📁' },
   { path: '/customers', label: 'Customers', icon: '👥' },
   { path: '/invoices', label: 'Invoices', icon: '📄' },
   { path: '/inventory', label: 'Inventory', icon: '📊' },

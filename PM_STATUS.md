@@ -14,7 +14,8 @@
 | **Polish** | ✅ Done | Last `alert()` replaced with toast (record payment) |
 | **Build** | ✅ Passing | `npm run build` succeeds |
 | **Scope lock** | ⏳ Pending | Stakeholder sign-off on Phase 1 scope |
-| **Categories & photos** | 📋 Planned | See `PHOTOS_CATEGORIES_PLAN.md` — not in Phase 1 go-live |
+| **Categories & photos** | ✅ Done | Categories + product photos (upload, thumbnail) |
+| **Phase 2** | 🔄 Started | Dashboard, Categories, Product photos implemented |
 | **Go-live** | ⏳ Not set | After smoke test, UAT, device test |
 | **Seed & help** | ✅ Ready | `supabase/seed_example.sql`, `supabase/add_customers_debt.sql`, `STAFF_HELP.md` |
 
@@ -47,10 +48,10 @@
 
 ---
 
-## Backlog (post–Phase 1)
+## Backlog (Phase 2+)
 
-- **Categories:** Manage categories, assign to products, filter list (see `PHOTOS_CATEGORIES_PLAN.md` Phase A).
-- **Product photos:** One image per product, upload in form, thumbnail in list (Phase B).
+- **Categories:** ✅ Done — CategoryList, ProductForm category, ProductList filter.
+- **Product photos:** ✅ Done — upload in Product form, thumbnail in Product list; Storage bucket `product-photos` required.
 - **Print receipt** right after sale (if not in Phase 1).
 - **Return history table + UI** (if audit trail required).
 - **Phase 2:** Multi-user, purchasing, suppliers, advanced reports (per `document.md`).
