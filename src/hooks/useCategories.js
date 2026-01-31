@@ -1,6 +1,15 @@
 import { useState, useEffect } from 'react'
 import { supabase } from '../lib/supabase'
 
+const FETCH_TIMEOUT_MS = 15_000
+
+function withTimeout(promise, ms, message = 'Request timed out') {
+  return Promise.race([
+    promise,
+    new Promise((_, reject) => setTimeout(() => reject(new Error(message)), ms)),
+  ])
+}
+
 export function useCategories() {
   const [categories, setCategories] = useState([])
   const [loading, setLoading] = useState(true)
@@ -10,10 +19,11 @@ export function useCategories() {
     setLoading(true)
     setError(null)
     try {
-      const { data, error: e } = await supabase
+      const query = supabase
         .from('categories')
         .select('*')
         .order('name')
+      const { data, error: e } = await withTimeout(query, FETCH_TIMEOUT_MS, 'Categories load timed out. Check your connection and Supabase.')
       if (e) {
         setError(e.message)
         setCategories([])

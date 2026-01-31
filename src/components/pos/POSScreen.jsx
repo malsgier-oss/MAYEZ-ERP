@@ -17,7 +17,7 @@ import { supabase } from '../../lib/supabase'
 export default function POSScreen() {
   const navigate = useNavigate()
   const { products, loading, error: productsError } = useProducts()
-  const { categories, loading: categoriesLoading, fetchCategories } = useCategories()
+  const { categories, loading: categoriesLoading, error: categoriesError, fetchCategories } = useCategories()
   const { customers } = useCustomers()
   const { items, customerId, customerName, discountAmount, discountPercentage, clearCart } = useCartStore()
   const [selectedCategoryId, setSelectedCategoryId] = useState(null)
@@ -119,6 +119,11 @@ export default function POSScreen() {
         {productsError && (
           <div className="mb-2 p-3 bg-red-50 text-red-700 rounded-lg text-sm">
             {productsError}
+          </div>
+        )}
+        {selectedCategoryId === null && categoriesError && (
+          <div className="mb-2 p-3 bg-amber-50 text-amber-800 rounded-lg text-sm">
+            {categoriesError}
           </div>
         )}
         {selectedCategoryId === null ? (

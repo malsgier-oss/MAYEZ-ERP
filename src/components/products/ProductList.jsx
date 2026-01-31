@@ -7,10 +7,23 @@ import { getProductPhotoUrl } from '../../utils/productPhoto'
 import { t } from '../../utils/i18n'
 
 export default function ProductList() {
-  const { products, loading, error } = useProducts()
+  const { products, loading, error, deleteProduct } = useProducts()
   const { categories } = useCategories()
   const [search, setSearch] = useState('')
   const [categoryFilter, setCategoryFilter] = useState('')
+  const [deletingId, setDeletingId] = useState(null)
+
+  const handleDelete = async (product) => {
+    if (!window.confirm(t('products.delete_confirm'))) return
+    setDeletingId(product.id)
+    try {
+      await deleteProduct(product.id)
+    } catch (err) {
+      window.alert(err?.message || t('common.failed_save'))
+    } finally {
+      setDeletingId(null)
+    }
+  }
   const filtered = products
     .filter((p) => {
       if (categoryFilter && p.category_id !== categoryFilter) return false
@@ -106,12 +119,22 @@ export default function ProductList() {
                     </td>
                     <td className="p-3 text-slate-500">{product.low_stock_threshold || '—'}</td>
                     <td className="p-3 text-right">
-                      <Link
-                        to={`/products/${product.id}/edit`}
-                        className="text-blue-600 hover:underline px-2 py-1"
-                      >
-                        {t('common.edit')}
-                      </Link>
+                      <span className="inline-flex gap-2 justify-end">
+                        <Link
+                          to={`/products/${product.id}/edit`}
+                          className="text-blue-600 hover:underline px-2 py-1"
+                        >
+                          {t('common.edit')}
+                        </Link>
+                        <button
+                          type="button"
+                          onClick={() => handleDelete(product)}
+                          disabled={deletingId === product.id}
+                          className="text-red-600 hover:underline px-2 py-1 disabled:opacity-50"
+                        >
+                          {t('products.delete')}
+                        </button>
+                      </span>
                     </td>
                   </tr>
                 ))}
