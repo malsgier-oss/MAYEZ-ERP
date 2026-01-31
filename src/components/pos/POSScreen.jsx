@@ -21,6 +21,7 @@ export default function POSScreen() {
   const [showDiscount, setShowDiscount] = useState(false)
   const [processing, setProcessing] = useState(false)
   const [toast, setToast] = useState(null)
+  const [lastCreatedInvoice, setLastCreatedInvoice] = useState(null)
 
   const subtotal = items.reduce((sum, i) => sum + Number(i.lineTotal), 0)
   const discount = discountAmount ?? (subtotal * (discountPercentage ?? 0)) / 100
@@ -66,6 +67,7 @@ export default function POSScreen() {
       }
       clearCart()
       setShowPayment(false)
+      setLastCreatedInvoice({ id: created.id, invoice_number: invoiceNumber })
       setToast({ type: 'success', message: `Invoice ${invoiceNumber} created` })
       setTimeout(() => setToast(null), 3000)
     } catch (err) {
@@ -159,6 +161,34 @@ export default function POSScreen() {
           } text-white`}
         >
           {toast.message}
+        </div>
+      )}
+
+      {lastCreatedInvoice && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-xl p-6 max-w-sm w-full shadow-xl">
+            <h3 className="text-lg font-semibold mb-2 text-green-700">Sale complete</h3>
+            <p className="text-slate-600 mb-4">Invoice {lastCreatedInvoice.invoice_number} created.</p>
+            <div className="flex flex-col gap-2">
+              <button
+                type="button"
+                onClick={() => {
+                  navigate(`/invoices/${lastCreatedInvoice.id}?print=1`)
+                  setLastCreatedInvoice(null)
+                }}
+                className="w-full py-3 bg-slate-700 text-white rounded-xl font-medium touch-target"
+              >
+                Print receipt
+              </button>
+              <button
+                type="button"
+                onClick={() => setLastCreatedInvoice(null)}
+                className="w-full py-3 border border-slate-300 rounded-xl font-medium touch-target"
+              >
+                Done
+              </button>
+            </div>
+          </div>
         </div>
       )}
     </div>

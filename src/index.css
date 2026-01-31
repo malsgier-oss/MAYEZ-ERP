@@ -16,3 +16,12 @@ button.touch-lg, .touch-target-lg {
   min-height: 80px;
   min-width: 80px;
 }
+
+/* Hide scrollbar but keep scroll (e.g. bottom nav on phone) */
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}

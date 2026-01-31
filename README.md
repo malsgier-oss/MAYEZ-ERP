@@ -54,6 +54,8 @@ Sales-first ERP – Phase 1 MVP: POS, products, customers, invoices, inventory, 
 - **Dashboard** – Today’s sales, outstanding debt, low-stock count, recent invoices (quick links).
 - **Categories** – Full category management and product assignment (see above).
 - **Product photos** – One image per product; upload in Product form; thumbnail in Product list (requires Storage bucket `product-photos`).
+- **Print receipt after sale** – POS success modal → “Print receipt” → invoice page with auto-print.
+- **Data export** – Settings: Export products, customers, or invoices as CSV (backup).
 
 ## Staff guide
 

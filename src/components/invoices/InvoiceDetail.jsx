@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react'
-import { useParams, useNavigate } from 'react-router-dom'
+import { useState, useEffect, useRef } from 'react'
+import { useParams, useNavigate, useSearchParams } from 'react-router-dom'
 import { supabase } from '../../lib/supabase'
 import { processInvoiceReturn } from '../../hooks/useInvoices'
 import { formatCurrency } from '../../utils/currency'
@@ -8,6 +8,8 @@ import { formatDate } from '../../utils/date'
 export default function InvoiceDetail() {
   const { id } = useParams()
   const navigate = useNavigate()
+  const [searchParams, setSearchParams] = useSearchParams()
+  const hasAutoPrinted = useRef(false)
   const [invoice, setInvoice] = useState(null)
   const [items, setItems] = useState([])
   const [payments, setPayments] = useState([])
@@ -33,6 +35,15 @@ export default function InvoiceDetail() {
     }
     if (id) load()
   }, [id])
+
+  useEffect(() => {
+    if (!invoice || hasAutoPrinted.current) return
+    if (searchParams.get('print') === '1') {
+      hasAutoPrinted.current = true
+      window.print()
+      setSearchParams({}, { replace: true })
+    }
+  }, [invoice, searchParams, setSearchParams])
 
   const handleRecordPayment = async (e) => {
     e.preventDefault()

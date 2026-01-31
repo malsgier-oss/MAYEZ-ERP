@@ -34,6 +34,18 @@
 
 ---
 
+## Go-live checklist (short)
+
+- [ ] Run `supabase/schema_full.sql` (or migrations) on target project
+- [ ] Create Storage bucket `product-photos` (public) if using product photos
+- [ ] Seed data: run `seed_example.sql` or load real products/customers
+- [ ] Set env: `VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY` for deploy
+- [ ] Smoke test: create sale → payment → return → inventory adjust → reports
+- [ ] Test on target device (tablet/phone)
+- [ ] One-week parallel run (old system + MAYEZ-ERP), then switch
+
+---
+
 ## Next actions (priority order)
 
 | # | Action | Owner | Done |
@@ -52,8 +64,9 @@
 
 - **Categories:** ✅ Done — CategoryList, ProductForm category, ProductList filter.
 - **Product photos:** ✅ Done — upload in Product form, thumbnail in Product list; Storage bucket `product-photos` required.
-- **Print receipt** right after sale (if not in Phase 1).
+- **Print receipt** right after sale: ✅ Done — POS success → "Print receipt" → auto-print invoice.
 - **Return history table + UI** (if audit trail required).
+- **Data export:** ✅ Done — Settings: Export products, customers, invoices (CSV).
 - **Phase 2:** Multi-user, purchasing, suppliers, advanced reports (per `document.md`).
 
 ---
@@ -76,6 +89,7 @@
 - **PHOTOS_CATEGORIES_PLAN.md** — Categories & photos (post–Phase 1).
 - **filea/TESTING_CHECKLIST.md** — Returns & QA.
 - **filea/RETURNS_IMPLEMENTATION_PLAN.md** — Returns spec.
+- **NEXT_STEPS_PLAN.md** — Next deliverables (print receipt, export, go-live).
 - **STAFF_HELP.md** — One-page staff guide (print or export to PDF).
 - **supabase/seed_example.sql** — Example products/customers/categories; run after schema.
 - **supabase/add_customers_debt.sql** — Add `customers.debt` for return debt adjustment.
