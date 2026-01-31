@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useCartStore } from '../../store/cartStore'
 import { useProducts } from '../../hooks/useProducts'
@@ -17,7 +17,7 @@ import { supabase } from '../../lib/supabase'
 export default function POSScreen() {
   const navigate = useNavigate()
   const { products, loading } = useProducts()
-  const { categories, loading: categoriesLoading } = useCategories()
+  const { categories, loading: categoriesLoading, fetchCategories } = useCategories()
   const { customers } = useCustomers()
   const { items, customerId, customerName, discountAmount, discountPercentage, clearCart } = useCartStore()
   const [selectedCategoryId, setSelectedCategoryId] = useState(null)
@@ -33,6 +33,10 @@ export default function POSScreen() {
     if (selectedCategoryId === 'all') return products
     return products.filter((p) => p.category_id === selectedCategoryId)
   }, [products, selectedCategoryId])
+
+  useEffect(() => {
+    if (selectedCategoryId === null) fetchCategories()
+  }, [selectedCategoryId, fetchCategories])
 
   const subtotal = items.reduce((sum, i) => sum + Number(i.lineTotal), 0)
   const discount = discountAmount ?? (subtotal * (discountPercentage ?? 0)) / 100

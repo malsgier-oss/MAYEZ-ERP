@@ -4,7 +4,7 @@ import { t } from '../../utils/i18n'
 import { getCategoryPhotoUrl, uploadCategoryPhoto, removeCategoryPhoto } from '../../utils/categoryPhoto'
 
 export default function CategoryList() {
-  const { categories, loading, error, addCategory, updateCategory } = useCategories()
+  const { categories, loading, error, addCategory, updateCategory, deleteCategory } = useCategories()
   const [editingId, setEditingId] = useState(null)
   const [editName, setEditName] = useState('')
   const [editPhotoFile, setEditPhotoFile] = useState(null)
@@ -56,6 +56,25 @@ export default function CategoryList() {
         updates.image_url = await uploadCategoryPhoto(editingId, editPhotoFile)
       }
       await updateCategory(editingId, updates)
+      setEditingId(null)
+      setEditName('')
+      setEditPhotoFile(null)
+      setEditRemovePhoto(false)
+    } catch (err) {
+      console.error(err)
+    } finally {
+      setSaving(false)
+    }
+  }
+
+  const handleDelete = async () => {
+    if (!editingId) return
+    if (!window.confirm(t('categories.delete_confirm'))) return
+    setSaving(true)
+    try {
+      const cat = categories.find((c) => c.id === editingId)
+      if (cat?.image_url) await removeCategoryPhoto(editingId, cat.image_url)
+      await deleteCategory(editingId)
       setEditingId(null)
       setEditName('')
       setEditPhotoFile(null)
@@ -148,12 +167,20 @@ export default function CategoryList() {
                         className="w-14 h-14 object-cover rounded border"
                       />
                     )}
-                    <div className="flex gap-2 w-full">
+                    <div className="flex gap-2 w-full flex-wrap">
                       <button type="submit" disabled={saving} className="px-3 py-2 bg-blue-600 text-white rounded-lg text-sm disabled:opacity-50">
                         {saving ? t('categories.loading') : t('common.save')}
                       </button>
                       <button type="button" onClick={() => { setEditingId(null); setEditName(''); setEditPhotoFile(null); setEditRemovePhoto(false) }} className="px-3 py-2 border rounded-lg text-sm">
                         {t('common.cancel')}
+                      </button>
+                      <button
+                        type="button"
+                        onClick={handleDelete}
+                        disabled={saving}
+                        className="px-3 py-2 bg-red-600 text-white rounded-lg text-sm disabled:opacity-50 hover:bg-red-700"
+                      >
+                        {t('categories.delete')}
                       </button>
                     </div>
                   </form>

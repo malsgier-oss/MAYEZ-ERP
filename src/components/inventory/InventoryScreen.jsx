@@ -1,7 +1,9 @@
 import { useState, useEffect } from 'react'
+import { Link } from 'react-router-dom'
 import { useProducts } from '../../hooks/useProducts'
 import { supabase } from '../../lib/supabase'
 import { formatCurrency } from '../../utils/currency'
+import { t } from '../../utils/i18n'
 import StockAdjustmentModal from './StockAdjustmentModal'
 
 export default function InventoryScreen() {
@@ -34,16 +36,24 @@ export default function InventoryScreen() {
   return (
     <div>
       <div className="flex flex-col sm:flex-row justify-between gap-4 mb-6">
-        <h1 className="text-2xl font-bold">Inventory</h1>
-        <label className="flex items-center gap-2 cursor-pointer">
-          <input
-            type="checkbox"
-            checked={filterLow}
-            onChange={(e) => setFilterLow(e.target.checked)}
-            className="rounded"
-          />
-          <span>Show low stock only</span>
-        </label>
+        <h1 className="text-2xl font-bold">{t('nav.inventory')}</h1>
+        <div className="flex flex-wrap gap-4 items-center">
+          <Link
+            to="/purchases/new"
+            className="px-4 py-2 bg-blue-600 text-white rounded-lg font-medium touch-target"
+          >
+            {t('purchase.receive_stock')}
+          </Link>
+          <label className="flex items-center gap-2 cursor-pointer">
+            <input
+              type="checkbox"
+              checked={filterLow}
+              onChange={(e) => setFilterLow(e.target.checked)}
+              className="rounded"
+            />
+            <span>Show low stock only</span>
+          </label>
+        </div>
       </div>
       {error && (
         <div className="mb-4 p-4 bg-red-50 text-red-700 rounded-lg">{error}</div>

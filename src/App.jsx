@@ -11,6 +11,10 @@ import CustomerForm from './components/customers/CustomerForm'
 import InvoiceHistory from './components/invoices/InvoiceHistory'
 import InvoiceDetail from './components/invoices/InvoiceDetail'
 import InventoryScreen from './components/inventory/InventoryScreen'
+import SupplierList from './components/suppliers/SupplierList'
+import SupplierForm from './components/suppliers/SupplierForm'
+import SupplierDetail from './components/suppliers/SupplierDetail'
+import ReceiveStockScreen from './components/purchases/ReceiveStockScreen'
 import ReportsScreen from './components/reports/ReportsScreen'
 import SettingsScreen from './components/settings/SettingsScreen'
 
@@ -29,6 +33,10 @@ export default function App() {
         <Route path="customers/:id" element={<CustomerDetail />} />
         <Route path="invoices" element={<InvoiceHistory />} />
         <Route path="invoices/:id" element={<InvoiceDetail />} />
+        <Route path="suppliers" element={<SupplierList />} />
+        <Route path="suppliers/new" element={<SupplierForm />} />
+        <Route path="suppliers/:id" element={<SupplierDetail />} />
+        <Route path="purchases/new" element={<ReceiveStockScreen />} />
         <Route path="inventory" element={<InventoryScreen />} />
         <Route path="reports" element={<ReportsScreen />} />
         <Route path="settings" element={<SettingsScreen />} />

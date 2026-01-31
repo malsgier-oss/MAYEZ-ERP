@@ -55,5 +55,13 @@ export function useCategories() {
     return data
   }
 
-  return { categories, loading, error, fetchCategories, addCategory, updateCategory }
+  const deleteCategory = async (id) => {
+    const { error: e } = await supabase.from('products').update({ category_id: null }).eq('category_id', id)
+    if (e) throw e
+    const { error: e2 } = await supabase.from('categories').delete().eq('id', id)
+    if (e2) throw e2
+    setCategories((prev) => prev.filter((c) => c.id !== id))
+  }
+
+  return { categories, loading, error, fetchCategories, addCategory, updateCategory, deleteCategory }
 }

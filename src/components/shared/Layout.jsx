@@ -9,6 +9,7 @@ const navItems = [
   { path: '/products', labelKey: 'nav.products', icon: '📦' },
   { path: '/categories', labelKey: 'nav.categories', icon: '📁' },
   { path: '/customers', labelKey: 'nav.customers', icon: '👥' },
+  { path: '/suppliers', labelKey: 'nav.suppliers', icon: '🚚' },
   { path: '/invoices', labelKey: 'nav.invoices', icon: '📄' },
   { path: '/inventory', labelKey: 'nav.inventory', icon: '📊' },
   { path: '/reports', labelKey: 'nav.reports', icon: '📈' },
