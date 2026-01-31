@@ -88,7 +88,7 @@ export default function ProductList() {
                       )}
                     </td>
                     <td className="p-3 font-medium">{product.name}</td>
-                    <td className="p-3 text-slate-600">{product.categories?.name ?? '—'}</td>
+                    <td className="p-3 text-slate-600">{categories.find((c) => c.id === product.category_id)?.name ?? '—'}</td>
                     <td className="p-3 text-slate-600">{product.sku || '—'}</td>
                     <td className="p-3">{formatCurrency(product.selling_price)}</td>
                     <td className="p-3">

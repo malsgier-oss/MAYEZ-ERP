@@ -16,7 +16,7 @@ import { supabase } from '../../lib/supabase'
 
 export default function POSScreen() {
   const navigate = useNavigate()
-  const { products, loading } = useProducts()
+  const { products, loading, error: productsError } = useProducts()
   const { categories, loading: categoriesLoading, fetchCategories } = useCategories()
   const { customers } = useCustomers()
   const { items, customerId, customerName, discountAmount, discountPercentage, clearCart } = useCartStore()
@@ -116,6 +116,11 @@ export default function POSScreen() {
             {t('pos.discount')}
           </button>
         </div>
+        {productsError && (
+          <div className="mb-2 p-3 bg-red-50 text-red-700 rounded-lg text-sm">
+            {productsError}
+          </div>
+        )}
         {selectedCategoryId === null ? (
           <CategoryGrid
             categories={categories}

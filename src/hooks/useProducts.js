@@ -21,7 +21,7 @@ export function useProducts() {
     try {
       const query = supabase
         .from('products')
-        .select('*, categories(name)')
+        .select('*')
         .eq('is_active', true)
         .order('name')
       const { data, error: e } = await withTimeout(query, FETCH_TIMEOUT_MS, 'Products load timed out. Check your connection and Supabase.')
