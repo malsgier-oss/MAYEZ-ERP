@@ -15,6 +15,16 @@ export function getCategoryPhotoUrl(category) {
   return category.image_url
 }
 
+/** Get a signed URL so the image loads even when the bucket is private (1h expiry). */
+export async function getCategoryPhotoSignedUrl(imageUrl) {
+  if (!imageUrl) return null
+  const path = imageUrl.split('/').pop()?.split('?')[0]
+  if (!path) return imageUrl
+  const { data, error } = await supabase.storage.from(BUCKET).createSignedUrl(path, 3600)
+  if (error) return imageUrl
+  return data?.signedUrl || imageUrl
+}
+
 export async function uploadCategoryPhoto(categoryId, file) {
   if (!file || !categoryId) return null
   if (file.size > MAX_SIZE_MB * 1024 * 1024) {

@@ -1,9 +1,31 @@
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useEffect } from 'react'
 import { t } from '../../utils/i18n'
-import { getCategoryPhotoUrl } from '../../utils/categoryPhoto'
+import { getCategoryPhotoUrl, getCategoryPhotoSignedUrl } from '../../utils/categoryPhoto'
 
 export default function CategoryGrid({ categories, loading, onSelectCategory }) {
   const [failedImageUrls, setFailedImageUrls] = useState(new Set())
+  const [signedUrls, setSignedUrls] = useState({})
+
+  useEffect(() => {
+    if (!categories.length) return
+    let cancelled = false
+    const load = async () => {
+      const next = {}
+      for (const cat of categories) {
+        const url = getCategoryPhotoUrl(cat)
+        if (!url) continue
+        try {
+          const signed = await getCategoryPhotoSignedUrl(url)
+          if (!cancelled && signed) next[cat.id] = signed
+        } catch {
+          if (!cancelled) next[cat.id] = url
+        }
+      }
+      if (!cancelled) setSignedUrls((prev) => ({ ...prev, ...next }))
+    }
+    load()
+    return () => { cancelled = true }
+  }, [categories])
 
   const handleImageError = useCallback((url) => {
     setFailedImageUrls((prev) => new Set(prev).add(url))
@@ -30,7 +52,8 @@ export default function CategoryGrid({ categories, loading, onSelectCategory }) 
         <span className="font-medium text-slate-700">{t('pos.all_categories')}</span>
       </button>
       {categories.map((cat) => {
-        const photoUrl = getCategoryPhotoUrl(cat)
+        const rawUrl = getCategoryPhotoUrl(cat)
+        const photoUrl = signedUrls[cat.id] || rawUrl
         const showImage = photoUrl && !failedImageUrls.has(photoUrl)
         return (
           <button
