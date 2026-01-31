@@ -22,9 +22,11 @@ export default function CategoryGrid({ categories, loading, onSelectCategory }) 
       <button
         type="button"
         onClick={() => onSelectCategory('all')}
-        className="flex flex-col items-center justify-center p-4 bg-white border-2 border-dashed border-slate-300 rounded-xl hover:border-blue-400 hover:bg-slate-50 transition touch-target-lg w-full min-h-[100px]"
+        className="flex flex-col items-center justify-center p-4 bg-white border-2 border-dashed border-slate-300 rounded-xl hover:border-blue-400 hover:bg-slate-50 transition touch-target-lg w-full min-h-[120px]"
       >
-        <span className="text-2xl mb-1">📦</span>
+        <div className="w-full h-20 rounded-lg mb-2 border border-slate-200 bg-slate-50 flex items-center justify-center flex-shrink-0">
+          <span className="text-3xl text-slate-400">📦</span>
+        </div>
         <span className="font-medium text-slate-700">{t('pos.all_categories')}</span>
       </button>
       {categories.map((cat) => {
@@ -35,17 +37,19 @@ export default function CategoryGrid({ categories, loading, onSelectCategory }) 
             key={cat.id}
             type="button"
             onClick={() => onSelectCategory(cat.id)}
-            className="flex flex-col items-center justify-center p-4 bg-white border border-slate-200 rounded-xl hover:border-blue-400 hover:shadow-md transition touch-target-lg text-left w-full min-h-[100px] overflow-hidden"
+            className="flex flex-col items-center justify-center p-4 bg-white border border-slate-200 rounded-xl hover:border-blue-400 hover:shadow-md transition touch-target-lg text-left w-full min-h-[120px] overflow-hidden"
           >
             {showImage ? (
               <img
                 src={photoUrl}
                 alt=""
-                className="w-14 h-14 object-cover rounded-lg mb-2 border border-slate-200"
+                className="w-full h-20 object-cover rounded-lg mb-2 border border-slate-200 flex-shrink-0"
                 onError={() => handleImageError(photoUrl)}
               />
             ) : (
-              <span className="text-2xl mb-2 text-slate-400">📁</span>
+              <div className="w-full h-20 rounded-lg mb-2 border border-slate-200 bg-slate-100 flex items-center justify-center flex-shrink-0">
+                <span className="text-3xl text-slate-400">📁</span>
+              </div>
             )}
             <span className="font-medium truncate w-full text-center text-slate-800">{cat.name}</span>
           </button>
