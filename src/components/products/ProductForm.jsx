@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom'
 import { useProducts } from '../../hooks/useProducts'
 import { useCategories } from '../../hooks/useCategories'
 import { uploadProductPhoto, removeProductPhoto, getProductPhotoUrl } from '../../utils/productPhoto'
+import { t } from '../../utils/i18n'
 
 const UNITS = ['pcs', 'kg', 'box', 'pack', 'meter', 'liter']
 
@@ -77,7 +78,7 @@ export default function ProductForm() {
       }
       navigate('/products')
     } catch (err) {
-      setError(err.message || 'Failed to save')
+      setError(err.message || t('common.failed_save'))
     } finally {
       setLoading(false)
     }
@@ -88,13 +89,13 @@ export default function ProductForm() {
 
   return (
     <div>
-      <h1 className="text-2xl font-bold mb-6">{isEdit ? 'Edit Product' : 'Add Product'}</h1>
+      <h1 className="text-2xl font-bold mb-6">{isEdit ? t('products.edit_product') : t('products.add_product')}</h1>
       {error && (
         <div className="mb-4 p-4 bg-red-50 text-red-700 rounded-lg">{error}</div>
       )}
       <form onSubmit={handleSubmit} className="max-w-xl space-y-4">
         <div>
-          <label className="block text-sm font-medium text-slate-700 mb-1">Name *</label>
+          <label className="block text-sm font-medium text-slate-700 mb-1">{t('products.name')} *</label>
           <input
             type="text"
             required
@@ -104,7 +105,7 @@ export default function ProductForm() {
           />
         </div>
         <div>
-          <label className="block text-sm font-medium text-slate-700 mb-1">SKU</label>
+          <label className="block text-sm font-medium text-slate-700 mb-1">{t('products.sku')}</label>
           <input
             type="text"
             value={form.sku}
@@ -113,13 +114,13 @@ export default function ProductForm() {
           />
         </div>
         <div>
-          <label className="block text-sm font-medium text-slate-700 mb-1">Category</label>
+          <label className="block text-sm font-medium text-slate-700 mb-1">{t('products.category')}</label>
           <select
             value={form.category_id || ''}
             onChange={(e) => setForm((f) => ({ ...f, category_id: e.target.value || null }))}
             className="w-full px-4 py-2 border rounded-lg"
           >
-            <option value="">No category</option>
+            <option value="">{t('products.no_category')}</option>
             {categories.map((c) => (
               <option key={c.id} value={c.id}>
                 {c.name}
@@ -128,7 +129,7 @@ export default function ProductForm() {
           </select>
         </div>
         <div>
-          <label className="block text-sm font-medium text-slate-700 mb-1">Product photo</label>
+          <label className="block text-sm font-medium text-slate-700 mb-1">{t('products.photo')}</label>
           <div className="flex flex-wrap items-start gap-4">
             {showPreview && (
               <div className="relative">
@@ -142,7 +143,7 @@ export default function ProductForm() {
                     type="button"
                     onClick={() => { setRemovePhoto(true); setPhotoFile(null); if (fileInputRef.current) fileInputRef.current.value = '' }}
                     className="absolute -top-1 -right-1 w-6 h-6 bg-red-500 text-white rounded-full text-sm leading-none flex items-center justify-center hover:bg-red-600"
-                    title="Remove photo"
+                    title={t('products.remove_photo')}
                   >
                     ×
                   </button>
@@ -160,12 +161,12 @@ export default function ProductForm() {
                 }}
                 className="text-sm"
               />
-              <span className="text-xs text-slate-500">JPEG, PNG or WebP, max 2 MB</span>
+              <span className="text-xs text-slate-500">{t('products.photo_hint')}</span>
             </div>
           </div>
         </div>
         <div>
-          <label className="block text-sm font-medium text-slate-700 mb-1">Description</label>
+          <label className="block text-sm font-medium text-slate-700 mb-1">{t('products.description')}</label>
           <textarea
             value={form.description}
             onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))}
@@ -174,7 +175,7 @@ export default function ProductForm() {
           />
         </div>
         <div>
-          <label className="block text-sm font-medium text-slate-700 mb-1">Unit</label>
+          <label className="block text-sm font-medium text-slate-700 mb-1">{t('products.unit')}</label>
           <select
             value={form.unit}
             onChange={(e) => setForm((f) => ({ ...f, unit: e.target.value }))}
@@ -188,7 +189,7 @@ export default function ProductForm() {
           </select>
         </div>
         <div>
-          <label className="block text-sm font-medium text-slate-700 mb-1">Selling price *</label>
+          <label className="block text-sm font-medium text-slate-700 mb-1">{t('products.price')} *</label>
           <input
             type="number"
             step="0.01"
@@ -200,7 +201,7 @@ export default function ProductForm() {
           />
         </div>
         <div>
-          <label className="block text-sm font-medium text-slate-700 mb-1">Current stock</label>
+          <label className="block text-sm font-medium text-slate-700 mb-1">{t('products.current_stock')}</label>
           <input
             type="number"
             min="0"
@@ -210,7 +211,7 @@ export default function ProductForm() {
           />
         </div>
         <div>
-          <label className="block text-sm font-medium text-slate-700 mb-1">Low stock threshold</label>
+          <label className="block text-sm font-medium text-slate-700 mb-1">{t('products.low_stock_threshold_label')}</label>
           <input
             type="number"
             min="0"
@@ -225,14 +226,14 @@ export default function ProductForm() {
             onClick={() => navigate('/products')}
             className="px-4 py-2 border rounded-lg"
           >
-            Cancel
+            {t('common.cancel')}
           </button>
           <button
             type="submit"
             disabled={loading}
             className="px-4 py-2 bg-blue-600 text-white rounded-lg font-medium disabled:opacity-50 touch-target"
           >
-            {loading ? 'Saving...' : isEdit ? 'Update' : 'Add Product'}
+            {loading ? t('products.saving') : isEdit ? t('products.update') : t('products.add_product')}
           </button>
         </div>
       </form>

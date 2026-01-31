@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import { supabase } from '../../lib/supabase'
 import { formatCurrency } from '../../utils/currency'
 import { formatDate } from '../../utils/date'
+import { t } from '../../utils/i18n'
 
 export default function DashboardScreen() {
   const [todaySales, setTodaySales] = useState(null)
@@ -55,28 +56,30 @@ export default function DashboardScreen() {
   }, [])
 
   if (loading) {
-    return <p className="text-slate-500">Loading...</p>
+    return <p className="text-slate-500">{t('common.loading')}</p>
   }
+
+  const statusKey = (s) => ({ paid: 'invoice.status_paid', partial: 'invoice.status_partial', unpaid: 'invoice.status_unpaid', refunded: 'invoice.status_refunded' }[s] || 'invoice.status')
 
   return (
     <div>
-      <h1 className="text-2xl font-bold mb-6">Dashboard</h1>
+      <h1 className="text-2xl font-bold mb-6">{t('dashboard.title')}</h1>
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4 mb-8">
         <Link
           to="/"
           className="bg-white rounded-xl shadow border p-6 hover:bg-slate-50 transition-colors block"
         >
-          <p className="text-sm text-slate-500 mb-1">Today&apos;s sales</p>
+          <p className="text-sm text-slate-500 mb-1">{t('dashboard.today_sales')}</p>
           <p className="text-2xl font-bold text-slate-800">
             {todaySales ? formatCurrency(todaySales.total) : '—'}
           </p>
-          <p className="text-sm text-slate-600 mt-1">{todaySales?.count ?? 0} invoices</p>
+          <p className="text-sm text-slate-600 mt-1">{todaySales?.count ?? 0} {t('dashboard.invoices_count')}</p>
         </Link>
         <Link
           to="/reports"
           className="bg-white rounded-xl shadow border p-6 hover:bg-slate-50 transition-colors block"
         >
-          <p className="text-sm text-slate-500 mb-1">Outstanding debt</p>
+          <p className="text-sm text-slate-500 mb-1">{t('dashboard.outstanding_debt')}</p>
           <p className={`text-2xl font-bold ${debtTotal > 0 ? 'text-amber-700' : 'text-slate-800'}`}>
             {formatCurrency(debtTotal)}
           </p>
@@ -85,7 +88,7 @@ export default function DashboardScreen() {
           to="/inventory"
           className="bg-white rounded-xl shadow border p-6 hover:bg-slate-50 transition-colors block"
         >
-          <p className="text-sm text-slate-500 mb-1">Low stock items</p>
+          <p className="text-sm text-slate-500 mb-1">{t('dashboard.low_stock_items')}</p>
           <p className={`text-2xl font-bold ${lowStockCount > 0 ? 'text-red-600' : 'text-slate-800'}`}>
             {lowStockCount}
           </p>
@@ -94,22 +97,22 @@ export default function DashboardScreen() {
           to="/invoices"
           className="bg-white rounded-xl shadow border p-6 hover:bg-slate-50 transition-colors block"
         >
-          <p className="text-sm text-slate-500 mb-1">Recent invoices</p>
+          <p className="text-sm text-slate-500 mb-1">{t('dashboard.recent_invoices')}</p>
           <p className="text-2xl font-bold text-slate-800">{recentInvoices.length}</p>
         </Link>
       </div>
 
       <div className="bg-white rounded-xl shadow border overflow-hidden">
-        <h2 className="text-lg font-semibold p-4 border-b border-slate-100">Recent invoices</h2>
+        <h2 className="text-lg font-semibold p-4 border-b border-slate-100">{t('dashboard.recent_invoices')}</h2>
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead className="bg-slate-50">
               <tr>
-                <th className="text-left p-3 font-medium text-slate-600">Number</th>
-                <th className="text-left p-3 font-medium text-slate-600">Date</th>
-                <th className="text-right p-3 font-medium text-slate-600">Total</th>
-                <th className="text-left p-3 font-medium text-slate-600">Status</th>
-                <th className="text-right p-3 font-medium text-slate-600">Actions</th>
+                <th className="text-left p-3 font-medium text-slate-600">{t('invoices.invoice_number')}</th>
+                <th className="text-left p-3 font-medium text-slate-600">{t('invoices.date')}</th>
+                <th className="text-right p-3 font-medium text-slate-600">{t('invoices.total')}</th>
+                <th className="text-left p-3 font-medium text-slate-600">{t('invoice.status')}</th>
+                <th className="text-right p-3 font-medium text-slate-600">{t('products.actions')}</th>
               </tr>
             </thead>
             <tbody>
@@ -128,12 +131,12 @@ export default function DashboardScreen() {
                             : 'bg-red-100 text-red-800'
                       }`}
                     >
-                      {inv.status}
+                      {t(statusKey(inv.status))}
                     </span>
                   </td>
                   <td className="p-3 text-right">
                     <Link to={`/invoices/${inv.id}`} className="text-blue-600 hover:underline text-sm">
-                      View
+                      {t('dashboard.view')}
                     </Link>
                   </td>
                 </tr>
@@ -142,7 +145,7 @@ export default function DashboardScreen() {
           </table>
         </div>
         {recentInvoices.length === 0 && (
-          <p className="p-8 text-center text-slate-500">No invoices yet</p>
+          <p className="p-8 text-center text-slate-500">{t('dashboard.no_invoices')}</p>
         )}
       </div>
     </div>

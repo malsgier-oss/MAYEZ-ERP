@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import { useInvoices } from '../../hooks/useInvoices'
 import { formatCurrency } from '../../utils/currency'
 import { formatDate } from '../../utils/date'
+import { t } from '../../utils/i18n'
 
 export default function InvoiceHistory() {
   const [statusFilter, setStatusFilter] = useState('')
@@ -14,20 +15,22 @@ export default function InvoiceHistory() {
     toDate: dateTo || undefined,
   })
 
+  const statusKey = (s) => ({ paid: 'invoice.status_paid', partial: 'invoice.status_partial', unpaid: 'invoice.status_unpaid', refunded: 'invoice.status_refunded' }[s] || 'invoice.status')
+
   return (
     <div>
       <div className="flex flex-col gap-4 mb-6">
-        <h1 className="text-2xl font-bold">Invoices</h1>
+        <h1 className="text-2xl font-bold">{t('invoices.title')}</h1>
         <div className="flex flex-wrap gap-2 items-center">
           <select
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
             className="px-3 py-2 border rounded-lg"
           >
-            <option value="">All statuses</option>
-            <option value="unpaid">Unpaid</option>
-            <option value="partial">Partial</option>
-            <option value="paid">Paid</option>
+            <option value="">{t('invoices.all_statuses')}</option>
+            <option value="unpaid">{t('invoice.status_unpaid')}</option>
+            <option value="partial">{t('invoice.status_partial')}</option>
+            <option value="paid">{t('invoice.status_paid')}</option>
           </select>
           <input
             type="date"
@@ -47,27 +50,27 @@ export default function InvoiceHistory() {
         <div className="mb-4 p-4 bg-red-50 text-red-700 rounded-lg">{error}</div>
       )}
       {loading ? (
-        <p className="text-slate-500">Loading...</p>
+        <p className="text-slate-500">{t('common.loading')}</p>
       ) : (
         <div className="bg-white rounded-xl shadow border overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead className="bg-slate-100">
                 <tr>
-                  <th className="text-left p-3 font-medium">Date</th>
-                  <th className="text-left p-3 font-medium">Invoice</th>
-                  <th className="text-left p-3 font-medium">Customer</th>
-                  <th className="text-right p-3 font-medium">Total</th>
-                  <th className="text-right p-3 font-medium">Paid</th>
-                  <th className="text-right p-3 font-medium">Balance</th>
-                  <th className="text-right p-3 font-medium">Status</th>
-                  <th className="text-right p-3 font-medium">Actions</th>
+                  <th className="text-left p-3 font-medium">{t('invoices.date')}</th>
+                  <th className="text-left p-3 font-medium">{t('invoices.invoice_number')}</th>
+                  <th className="text-left p-3 font-medium">{t('invoices.customer')}</th>
+                  <th className="text-right p-3 font-medium">{t('invoices.total')}</th>
+                  <th className="text-right p-3 font-medium">{t('invoices.paid')}</th>
+                  <th className="text-right p-3 font-medium">{t('invoices.balance')}</th>
+                  <th className="text-right p-3 font-medium">{t('invoice.status')}</th>
+                  <th className="text-right p-3 font-medium">{t('products.actions')}</th>
                 </tr>
               </thead>
               <tbody>
                 {invoices.map((inv) => {
                   const balance = Number(inv.total_amount) - Number(inv.paid_amount)
-                  const customerName = inv.customers?.name || 'Walk-in'
+                  const customerName = inv.customers?.name || t('invoice.walkin')
                   return (
                     <tr
                       key={inv.id}
@@ -91,12 +94,12 @@ export default function InvoiceHistory() {
                               : 'bg-red-100 text-red-800'
                           }`}
                         >
-                          {inv.status}
+                          {t(statusKey(inv.status))}
                         </span>
                       </td>
                       <td className="p-3 text-right">
                         <Link to={`/invoices/${inv.id}`} className="text-blue-600 hover:underline">
-                          View
+                          {t('invoices.view')}
                         </Link>
                       </td>
                     </tr>
@@ -106,7 +109,7 @@ export default function InvoiceHistory() {
             </table>
           </div>
           {invoices.length === 0 && (
-            <p className="p-8 text-center text-slate-500">No invoices found</p>
+            <p className="p-8 text-center text-slate-500">{t('invoices.no_invoices')}</p>
           )}
         </div>
       )}

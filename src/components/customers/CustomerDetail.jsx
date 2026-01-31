@@ -3,8 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom'
 import { supabase } from '../../lib/supabase'
 import { formatCurrency } from '../../utils/currency'
 import { formatDate } from '../../utils/date'
-
-const REASONS = ['received', 'sold external', 'damaged', 'stolen', 'counted']
+import { t } from '../../utils/i18n'
 
 export default function CustomerDetail() {
   const { id } = useParams()
@@ -59,7 +58,7 @@ export default function CustomerDetail() {
           payment_date: paymentDate,
           amount: apply,
           payment_method: 'cash',
-          notes: 'Payment on account',
+          notes: t('customer_detail.notes_payment'),
         })
         const newPaid = Number(inv.paid_amount) + apply
         const status = newPaid >= Number(inv.total_amount) ? 'paid' : 'partial'
@@ -73,7 +72,7 @@ export default function CustomerDetail() {
           payment_date: paymentDate,
           amount: remaining,
           payment_method: 'cash',
-          notes: 'Credit on account',
+          notes: t('customer_detail.notes_credit'),
         })
       }
       setPaymentAmount('')
@@ -83,7 +82,7 @@ export default function CustomerDetail() {
       const stillUnpaid = (inv || []).filter((i) => i.status !== 'paid')
       setDebt(stillUnpaid.reduce((sum, i) => sum + (Number(i.total_amount) - Number(i.paid_amount)), 0))
     } catch (err) {
-      setError(err.message || 'Failed to record payment')
+      setError(err.message || t('common.failed_payment'))
     } finally {
       setProcessing(false)
     }
@@ -94,7 +93,7 @@ export default function CustomerDetail() {
     return null
   }
   if (loading || !customer) {
-    return <p className="text-slate-500">Loading...</p>
+    return <p className="text-slate-500">{t('common.loading')}</p>
   }
 
   return (
@@ -106,21 +105,21 @@ export default function CustomerDetail() {
           onClick={() => navigate('/customers')}
           className="text-slate-600 hover:underline"
         >
-          ← Back to list
+          {t('customer_detail.back_to_list')}
         </button>
       </div>
       <div className="grid gap-6 md:grid-cols-2">
         <div className="bg-white rounded-xl shadow border p-6">
-          <h2 className="text-lg font-semibold mb-4">Details</h2>
+          <h2 className="text-lg font-semibold mb-4">{t('customer_detail.details')}</h2>
           <dl className="space-y-2 text-sm">
-            <div><dt className="text-slate-500">Phone</dt><dd>{customer.phone || '—'}</dd></div>
-            <div><dt className="text-slate-500">Email</dt><dd>{customer.email || '—'}</dd></div>
-            <div><dt className="text-slate-500">Address</dt><dd>{customer.address || '—'}</dd></div>
-            {customer.notes && <div><dt className="text-slate-500">Notes</dt><dd>{customer.notes}</dd></div>}
+            <div><dt className="text-slate-500">{t('customers.phone')}</dt><dd>{customer.phone || '—'}</dd></div>
+            <div><dt className="text-slate-500">{t('customers.email')}</dt><dd>{customer.email || '—'}</dd></div>
+            <div><dt className="text-slate-500">{t('customers.address')}</dt><dd>{customer.address || '—'}</dd></div>
+            {customer.notes && <div><dt className="text-slate-500">{t('customers.notes')}</dt><dd>{customer.notes}</dd></div>}
           </dl>
         </div>
         <div className="bg-white rounded-xl shadow border p-6">
-          <h2 className="text-lg font-semibold mb-4">Outstanding debt</h2>
+          <h2 className="text-lg font-semibold mb-4">{t('customers.outstanding_debt')}</h2>
           <p className={`text-2xl font-bold ${debt > 0 ? 'text-amber-700' : 'text-slate-600'}`}>
             {formatCurrency(debt)}
           </p>
@@ -130,23 +129,23 @@ export default function CustomerDetail() {
               onClick={() => setShowPayment(true)}
               className="mt-4 px-4 py-3 bg-green-600 text-white rounded-xl font-medium touch-target"
             >
-              Collect Payment
+              {t('customers.collect_payment')}
             </button>
           )}
         </div>
       </div>
       <div className="mt-8 bg-white rounded-xl shadow border overflow-hidden">
-        <h2 className="text-lg font-semibold p-4 border-b">Invoice history</h2>
+        <h2 className="text-lg font-semibold p-4 border-b">{t('customers.invoice_history')}</h2>
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead className="bg-slate-50">
               <tr>
-                <th className="text-left p-3 font-medium">Date</th>
-                <th className="text-left p-3 font-medium">Invoice</th>
-                <th className="text-right p-3 font-medium">Total</th>
-                <th className="text-right p-3 font-medium">Paid</th>
-                <th className="text-right p-3 font-medium">Balance</th>
-                <th className="text-right p-3 font-medium">Status</th>
+                <th className="text-left p-3 font-medium">{t('invoices.date')}</th>
+                <th className="text-left p-3 font-medium">{t('invoices.invoice_number')}</th>
+                <th className="text-right p-3 font-medium">{t('invoices.total')}</th>
+                <th className="text-right p-3 font-medium">{t('invoices.paid')}</th>
+                <th className="text-right p-3 font-medium">{t('invoices.balance')}</th>
+                <th className="text-right p-3 font-medium">{t('invoice.status')}</th>
               </tr>
             </thead>
             <tbody>
@@ -168,7 +167,7 @@ export default function CustomerDetail() {
                         inv.status === 'paid' ? 'bg-green-100 text-green-800' :
                         inv.status === 'partial' ? 'bg-amber-100 text-amber-800' : 'bg-red-100 text-red-800'
                       }`}>
-                        {inv.status}
+                        {t(({ paid: 'invoice.status_paid', partial: 'invoice.status_partial', unpaid: 'invoice.status_unpaid', refunded: 'invoice.status_refunded' })[inv.status] || 'invoice.status')}
                       </span>
                     </td>
                   </tr>
@@ -182,24 +181,24 @@ export default function CustomerDetail() {
       {showPayment && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-xl p-6 max-w-sm w-full">
-            <h3 className="text-lg font-semibold mb-4">Collect payment</h3>
+            <h3 className="text-lg font-semibold mb-4">{t('customers.collect_payment')}</h3>
             {error && <p className="text-red-600 text-sm mb-2">{error}</p>}
             <form onSubmit={handlePayment}>
               <input
                 type="number"
                 step="0.01"
                 min="0"
-                placeholder="Amount"
+                placeholder={t('invoice.amount')}
                 value={paymentAmount}
                 onChange={(e) => setPaymentAmount(e.target.value)}
                 className="w-full px-4 py-3 border rounded-lg mb-4"
               />
               <div className="flex gap-2">
                 <button type="button" onClick={() => setShowPayment(false)} className="flex-1 py-2 border rounded-lg">
-                  Cancel
+                  {t('common.cancel')}
                 </button>
                 <button type="submit" disabled={processing} className="flex-1 py-2 bg-green-600 text-white rounded-lg disabled:opacity-50">
-                  {processing ? '...' : 'Record'}
+                  {processing ? '...' : t('invoice.record')}
                 </button>
               </div>
             </form>

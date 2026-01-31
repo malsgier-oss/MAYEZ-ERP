@@ -57,7 +57,7 @@ export default function SupplierDetail() {
       setSupplier(s || null)
       fetchSuppliers()
     } catch (err) {
-      setError(err.message || 'Failed to record payment')
+      setError(err.message || t('supplier_detail.failed_payment'))
     } finally {
       setProcessing(false)
     }
@@ -120,8 +120,8 @@ export default function SupplierDetail() {
                 <th className="text-left p-3 font-medium">{t('purchase.payment_date')}</th>
                 <th className="text-left p-3 font-medium">#</th>
                 <th className="text-right p-3 font-medium">{t('pos.total')}</th>
-                <th className="text-right p-3 font-medium">Paid</th>
-                <th className="text-right p-3 font-medium">Status</th>
+                <th className="text-right p-3 font-medium">{t('invoices.paid')}</th>
+                <th className="text-right p-3 font-medium">{t('invoice.status')}</th>
               </tr>
             </thead>
             <tbody>
@@ -136,7 +136,7 @@ export default function SupplierDetail() {
                       pur.status === 'paid' ? 'bg-green-100 text-green-800' :
                       pur.status === 'partial' ? 'bg-amber-100 text-amber-800' : 'bg-red-100 text-red-800'
                     }`}>
-                      {pur.status}
+                      {t(({ paid: 'invoice.status_paid', partial: 'invoice.status_partial', unpaid: 'invoice.status_unpaid' })[pur.status] || 'invoice.status')}
                     </span>
                   </td>
                 </tr>
@@ -145,7 +145,7 @@ export default function SupplierDetail() {
           </table>
         </div>
         {purchases.length === 0 && (
-          <p className="p-8 text-center text-slate-500">No purchases yet</p>
+          <p className="p-8 text-center text-slate-500">{t('supplier_detail.no_purchases')}</p>
         )}
       </div>
 

@@ -30,7 +30,7 @@ export default function SupplierForm() {
       })
       navigate('/suppliers')
     } catch (err) {
-      setError(err.message || 'Failed to save')
+      setError(err.message || t('suppliers.failed_save'))
     } finally {
       setLoading(false)
     }

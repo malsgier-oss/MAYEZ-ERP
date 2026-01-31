@@ -86,7 +86,7 @@ export default function POSScreen() {
       setToast({ type: 'success', message: t('pos.invoice_created').replace('{number}', invoiceNumber) })
       setTimeout(() => setToast(null), 3000)
     } catch (err) {
-      setToast({ type: 'error', message: err.message || 'Failed to create invoice' })
+      setToast({ type: 'error', message: err.message || t('pos.failed_invoice') })
     } finally {
       setProcessing(false)
     }

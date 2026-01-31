@@ -4,12 +4,12 @@ import { t } from '../../utils/i18n'
 import { exportProductsCsv, exportCustomersCsv, exportInvoicesCsv } from '../../utils/csvExport'
 
 const DEFAULT_SETTINGS = {
-  business_name: 'My Business',
+  business_name: '',
   business_address: '',
   business_phone: '',
   invoice_prefix: 'INV',
-  currency_symbol: '$',
-  receipt_footer: 'Thank you for your business!',
+  currency_symbol: 'ر.س',
+  receipt_footer: '',
   language: 'ar',
 }
 

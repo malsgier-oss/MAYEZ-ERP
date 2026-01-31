@@ -50,7 +50,7 @@ export default function ReceiveStockScreen() {
     }
     const validLines = lines.filter((l) => l.product_id && Number(l.quantity) > 0)
     if (validLines.length === 0) {
-      setError('Add at least one product with quantity')
+      setError(t('purchase.add_one_line'))
       return
     }
     if (total <= 0) {
@@ -91,7 +91,7 @@ export default function ReceiveStockScreen() {
         navigate('/inventory')
       }, 2000)
     } catch (err) {
-      setError(err.message || 'Failed to create purchase')
+      setError(err.message || t('purchase.failed_create'))
     } finally {
       setLoading(false)
     }

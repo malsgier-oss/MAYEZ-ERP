@@ -1,12 +1,13 @@
 import { useState } from 'react'
 import { supabase } from '../../lib/supabase'
+import { t } from '../../utils/i18n'
 
 const REASONS = [
-  { value: 'received', label: 'Received' },
-  { value: 'sold external', label: 'Sold external' },
-  { value: 'damaged', label: 'Damaged' },
-  { value: 'stolen', label: 'Stolen' },
-  { value: 'counted', label: 'Counted (correction)' },
+  { value: 'received', labelKey: 'inventory.reason_received' },
+  { value: 'sold external', labelKey: 'inventory.reason_sold' },
+  { value: 'damaged', labelKey: 'inventory.reason_damaged' },
+  { value: 'stolen', labelKey: 'inventory.reason_stolen' },
+  { value: 'counted', labelKey: 'inventory.reason_counted' },
 ]
 
 export default function StockAdjustmentModal({ product, onClose, onDone }) {
@@ -50,7 +51,7 @@ export default function StockAdjustmentModal({ product, onClose, onDone }) {
         .eq('id', product.id)
       onDone()
     } catch (err) {
-      setError(err.message || 'Failed to adjust stock')
+      setError(err.message || t('stock_adjustment.failed_adjust'))
     } finally {
       setLoading(false)
     }
@@ -59,14 +60,14 @@ export default function StockAdjustmentModal({ product, onClose, onDone }) {
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
       <div className="bg-white rounded-xl p-6 max-w-sm w-full">
-        <h3 className="text-lg font-semibold mb-2">Adjust stock</h3>
+        <h3 className="text-lg font-semibold mb-2">{t('inventory.adjust_stock')}</h3>
         <p className="text-slate-600 mb-4 font-medium">{product.name}</p>
-        <p className="text-sm text-slate-500 mb-4">Current stock: {current}</p>
+        <p className="text-sm text-slate-500 mb-4">{t('inventory.current_stock_label')}: {current}</p>
         {error && <p className="text-red-600 text-sm mb-2">{error}</p>}
         <form onSubmit={handleSubmit}>
           <div className="space-y-4">
             <label className="block">
-              <span className="text-sm font-medium text-slate-700">New stock *</span>
+              <span className="text-sm font-medium text-slate-700">{t('inventory.new_stock')} *</span>
               <input
                 type="number"
                 min="0"
@@ -77,7 +78,7 @@ export default function StockAdjustmentModal({ product, onClose, onDone }) {
               />
             </label>
             <label className="block">
-              <span className="text-sm font-medium text-slate-700">Reason</span>
+              <span className="text-sm font-medium text-slate-700">{t('inventory.reason')}</span>
               <select
                 value={reason}
                 onChange={(e) => setReason(e.target.value)}
@@ -85,13 +86,13 @@ export default function StockAdjustmentModal({ product, onClose, onDone }) {
               >
                 {REASONS.map((r) => (
                   <option key={r.value} value={r.value}>
-                    {r.label}
+                    {t(r.labelKey)}
                   </option>
                 ))}
               </select>
             </label>
             <label className="block">
-              <span className="text-sm font-medium text-slate-700">Note (optional)</span>
+              <span className="text-sm font-medium text-slate-700">{t('inventory.note_optional')}</span>
               <input
                 type="text"
                 value={notes}
@@ -102,7 +103,7 @@ export default function StockAdjustmentModal({ product, onClose, onDone }) {
           </div>
           <div className="flex gap-2 mt-6">
             <button type="button" onClick={onClose} className="flex-1 py-2 border rounded-lg">
-              Cancel
+              {t('common.cancel')}
             </button>
             <button
               type="submit"

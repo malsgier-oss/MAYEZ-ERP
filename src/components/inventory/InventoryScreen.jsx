@@ -36,7 +36,7 @@ export default function InventoryScreen() {
   return (
     <div>
       <div className="flex flex-col sm:flex-row justify-between gap-4 mb-6">
-        <h1 className="text-2xl font-bold">{t('nav.inventory')}</h1>
+        <h1 className="text-2xl font-bold">{t('inventory.title')}</h1>
         <div className="flex flex-wrap gap-4 items-center">
           <Link
             to="/purchases/new"
@@ -51,7 +51,7 @@ export default function InventoryScreen() {
               onChange={(e) => setFilterLow(e.target.checked)}
               className="rounded"
             />
-            <span>Show low stock only</span>
+            <span>{t('inventory.show_low_only')}</span>
           </label>
         </div>
       </div>
@@ -59,18 +59,18 @@ export default function InventoryScreen() {
         <div className="mb-4 p-4 bg-red-50 text-red-700 rounded-lg">{error}</div>
       )}
       {loading ? (
-        <p className="text-slate-500">Loading...</p>
+        <p className="text-slate-500">{t('common.loading')}</p>
       ) : (
         <div className="bg-white rounded-xl shadow border overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead className="bg-slate-100">
                 <tr>
-                  <th className="text-left p-3 font-medium">Product</th>
-                  <th className="text-left p-3 font-medium">SKU</th>
-                  <th className="text-right p-3 font-medium">Current stock</th>
-                  <th className="text-right p-3 font-medium">Low threshold</th>
-                  <th className="text-right p-3 font-medium">Actions</th>
+                  <th className="text-left p-3 font-medium">{t('inventory.product')}</th>
+                  <th className="text-left p-3 font-medium">{t('products.sku')}</th>
+                  <th className="text-right p-3 font-medium">{t('inventory.current_stock_label')}</th>
+                  <th className="text-right p-3 font-medium">{t('inventory.low_threshold')}</th>
+                  <th className="text-right p-3 font-medium">{t('products.actions')}</th>
                 </tr>
               </thead>
               <tbody>
@@ -101,14 +101,14 @@ export default function InventoryScreen() {
                           onClick={() => setAdjustProduct(product)}
                           className="px-3 py-2 bg-blue-600 text-white rounded-lg text-sm touch-target"
                         >
-                          Adjust Stock
+                          {t('inventory.adjust_stock')}
                         </button>
                         <button
                           type="button"
                           onClick={() => loadMovements(product.id)}
                           className="px-3 py-2 border rounded-lg text-sm"
                         >
-                          History
+                          {t('inventory.history')}
                         </button>
                       </td>
                     </tr>
@@ -119,7 +119,7 @@ export default function InventoryScreen() {
           </div>
           {filtered.length === 0 && (
             <p className="p-8 text-center text-slate-500">
-              {filterLow ? 'No low-stock products' : 'No products found'}
+              {filterLow ? t('inventory.no_low_stock') : t('inventory.no_products')}
             </p>
           )}
         </div>
@@ -136,7 +136,7 @@ export default function InventoryScreen() {
       {showMovementsFor && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-xl p-6 max-w-lg w-full max-h-[80vh] overflow-auto">
-            <h3 className="text-lg font-semibold mb-4">Stock movement history</h3>
+            <h3 className="text-lg font-semibold mb-4">{t('inventory.stock_history')}</h3>
             <ul className="space-y-2 text-sm">
               {movements.map((m) => (
                 <li key={m.id} className="flex justify-between border-b border-slate-100 pb-2">
@@ -153,7 +153,7 @@ export default function InventoryScreen() {
               onClick={() => setShowMovementsFor(null)}
               className="mt-4 w-full py-2 border rounded-lg"
             >
-              Close
+              {t('pos.close')}
             </button>
           </div>
         </div>

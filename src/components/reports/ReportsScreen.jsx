@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { supabase } from '../../lib/supabase'
 import { formatCurrency } from '../../utils/currency'
 import { formatDate } from '../../utils/date'
+import { t } from '../../utils/i18n'
 
 export default function ReportsScreen() {
   const [dateFrom, setDateFrom] = useState(() => {
@@ -83,15 +84,15 @@ export default function ReportsScreen() {
   }, [dateFrom, dateTo])
 
   if (loading && !dailySales) {
-    return <p className="text-slate-500">Loading reports...</p>
+    return <p className="text-slate-500">{t('reports.loading')}</p>
   }
 
   return (
     <div>
-      <h1 className="text-2xl font-bold mb-6">Reports</h1>
+      <h1 className="text-2xl font-bold mb-6">{t('reports.title')}</h1>
       <div className="flex flex-wrap gap-4 mb-6">
         <label className="flex items-center gap-2">
-          <span className="text-sm text-slate-600">From</span>
+          <span className="text-sm text-slate-600">{t('reports.from')}</span>
           <input
             type="date"
             value={dateFrom}
@@ -100,7 +101,7 @@ export default function ReportsScreen() {
           />
         </label>
         <label className="flex items-center gap-2">
-          <span className="text-sm text-slate-600">To</span>
+          <span className="text-sm text-slate-600">{t('reports.to')}</span>
           <input
             type="date"
             value={dateTo}
@@ -112,22 +113,22 @@ export default function ReportsScreen() {
 
       <div className="grid gap-6 md:grid-cols-2">
         <div className="bg-white rounded-xl shadow border p-6">
-          <h2 className="text-lg font-semibold mb-4">Daily sales summary</h2>
+          <h2 className="text-lg font-semibold mb-4">{t('reports.daily_sales_summary')}</h2>
           {dailySales ? (
             <div className="space-y-2">
               <p className="text-2xl font-bold text-slate-800">{formatCurrency(dailySales.totalSales)}</p>
-              <p className="text-slate-600 text-sm">Invoices: {dailySales.count}</p>
-              <p className="text-slate-600 text-sm">Collected: {formatCurrency(dailySales.totalPaid)}</p>
+              <p className="text-slate-600 text-sm">{t('reports.invoices_label')}: {dailySales.count}</p>
+              <p className="text-slate-600 text-sm">{t('reports.collected')}: {formatCurrency(dailySales.totalPaid)}</p>
             </div>
           ) : (
-            <p className="text-slate-500">No data</p>
+            <p className="text-slate-500">{t('reports.no_data')}</p>
           )}
         </div>
 
         <div className="bg-white rounded-xl shadow border p-6">
-          <h2 className="text-lg font-semibold mb-4">Customer debt (who owes what)</h2>
+          <h2 className="text-lg font-semibold mb-4">{t('reports.customer_debt')}</h2>
           {debtList.length === 0 ? (
-            <p className="text-slate-500">No outstanding debt</p>
+            <p className="text-slate-500">{t('reports.no_debt')}</p>
           ) : (
             <ul className="space-y-2 max-h-64 overflow-auto">
               {debtList.map((d) => (
@@ -141,9 +142,9 @@ export default function ReportsScreen() {
         </div>
 
         <div className="bg-white rounded-xl shadow border p-6">
-          <h2 className="text-lg font-semibold mb-4">Low stock products</h2>
+          <h2 className="text-lg font-semibold mb-4">{t('reports.low_stock_products')}</h2>
           {lowStock.length === 0 ? (
-            <p className="text-slate-500">All stock levels OK</p>
+            <p className="text-slate-500">{t('reports.all_stock_ok')}</p>
           ) : (
             <ul className="space-y-2">
               {lowStock.map((p) => (
@@ -159,15 +160,15 @@ export default function ReportsScreen() {
         </div>
 
         <div className="bg-white rounded-xl shadow border p-6">
-          <h2 className="text-lg font-semibold mb-4">Top 10 best-selling products</h2>
+          <h2 className="text-lg font-semibold mb-4">{t('reports.top_10_products')}</h2>
           {topProducts.length === 0 ? (
-            <p className="text-slate-500">No sales in date range</p>
+            <p className="text-slate-500">{t('reports.no_sales')}</p>
           ) : (
             <ol className="space-y-2 list-decimal list-inside">
               {topProducts.map((p) => (
                 <li key={p.id} className="flex justify-between border-b border-slate-100 pb-2">
                   <span>{p.name}</span>
-                  <span className="font-medium">{p.qty} sold</span>
+                  <span className="font-medium">{p.qty} {t('reports.sold')}</span>
                 </li>
               ))}
             </ol>
