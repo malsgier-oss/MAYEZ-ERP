@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { formatCurrency } from '../../utils/currency'
+import { t } from '../../utils/i18n'
 
 export default function PaymentModal({ total, onClose, onCash, onCredit, processing }) {
   const [cashAmount, setCashAmount] = useState(String(total))
@@ -13,11 +14,11 @@ export default function PaymentModal({ total, onClose, onCash, onCredit, process
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
       <div className="bg-white rounded-xl p-6 max-w-sm w-full">
-        <h3 className="text-lg font-semibold mb-2">Complete payment</h3>
+        <h3 className="text-lg font-semibold mb-2">{t('pos.complete_payment')}</h3>
         <p className="text-2xl font-bold text-slate-800 mb-4">{formatCurrency(total)}</p>
         <div className="space-y-3">
           <label className="block">
-            <span className="text-sm text-slate-600">Cash received</span>
+            <span className="text-sm text-slate-600">{t('pos.cash_received')}</span>
             <input
               type="number"
               step="0.01"
@@ -29,7 +30,7 @@ export default function PaymentModal({ total, onClose, onCash, onCredit, process
         </div>
         <div className="flex gap-2 mt-6">
           <button type="button" onClick={onClose} disabled={processing} className="flex-1 py-3 border rounded-xl">
-            Cancel
+            {t('common.cancel')}
           </button>
           <button
             type="button"
@@ -37,7 +38,7 @@ export default function PaymentModal({ total, onClose, onCash, onCredit, process
             disabled={processing}
             className="flex-1 py-3 bg-green-600 text-white rounded-xl font-medium disabled:opacity-50"
           >
-            {processing ? '...' : 'Cash'}
+            {processing ? '...' : t('pos.cash')}
           </button>
           <button
             type="button"
@@ -45,7 +46,7 @@ export default function PaymentModal({ total, onClose, onCash, onCredit, process
             disabled={processing}
             className="flex-1 py-3 bg-blue-600 text-white rounded-xl font-medium disabled:opacity-50"
           >
-            {processing ? '...' : 'Credit'}
+            {processing ? '...' : t('pos.credit')}
           </button>
         </div>
       </div>

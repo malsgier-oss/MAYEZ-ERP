@@ -10,7 +10,7 @@ const DEFAULT_SETTINGS = {
   invoice_prefix: 'INV',
   currency_symbol: '$',
   receipt_footer: 'Thank you for your business!',
-  language: 'en',
+  language: 'ar',
 }
 
 export default function SettingsScreen() {

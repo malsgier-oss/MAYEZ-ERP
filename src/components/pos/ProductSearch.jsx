@@ -1,8 +1,9 @@
 import { useState, useMemo } from 'react'
 import { useCartStore } from '../../store/cartStore'
 import { formatCurrency } from '../../utils/currency'
+import { t } from '../../utils/i18n'
 
-export default function ProductSearch({ products, loading }) {
+export default function ProductSearch({ products, loading, onBackToCategories }) {
   const [search, setSearch] = useState('')
   const addItem = useCartStore((s) => s.addItem)
 
@@ -18,16 +19,25 @@ export default function ProductSearch({ products, loading }) {
 
   return (
     <div className="flex flex-col h-full">
+      {onBackToCategories && (
+        <button
+          type="button"
+          onClick={onBackToCategories}
+          className="self-start mb-2 px-3 py-2 text-sm font-medium text-blue-600 hover:bg-blue-50 rounded-lg touch-target"
+        >
+          ← {t('pos.back_to_categories')}
+        </button>
+      )}
       <input
         type="search"
-        placeholder="Search product or SKU..."
+        placeholder={t('pos.search_placeholder')}
         value={search}
         onChange={(e) => setSearch(e.target.value)}
         className="w-full px-4 py-3 text-lg border border-slate-300 rounded-xl mb-4 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
         autoFocus
       />
       {loading ? (
-        <p className="text-slate-500 py-8">Loading products...</p>
+        <p className="text-slate-500 py-8">{t('pos.loading_products')}</p>
       ) : (
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 overflow-auto flex-1">
           {filtered.map((product) => (
@@ -47,13 +57,13 @@ export default function ProductSearch({ products, loading }) {
                       : 'text-slate-500'
                   }`}
                 >
-                  Stock: {product.current_stock}
+                  {t('pos.stock')}: {product.current_stock}
                 </span>
               )}
             </button>
           ))}
           {filtered.length === 0 && (
-            <p className="col-span-full text-slate-500 py-8 text-center">No products found</p>
+            <p className="col-span-full text-slate-500 py-8 text-center">{t('pos.no_products')}</p>
           )}
         </div>
       )}

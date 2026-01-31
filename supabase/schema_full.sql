@@ -2,8 +2,8 @@
 -- Use this on a NEW project. Includes: categories, products (with category_id, image_url),
 -- customers (with debt), invoices (status: paid/partial/unpaid/refunded), invoice_items,
 -- payments, stock_movements, invoice number sequence, RLS policies.
--- After running: create Storage bucket "product-photos" (public) in Dashboard if using product photos.
--- If you already ran schema.sql before: use add_refunded_status.sql, add_customers_debt.sql, add_product_image_url.sql instead.
+-- After running: create Storage buckets "product-photos" and "category-photos" (public) in Dashboard if using photos.
+-- If you already ran schema.sql before: use add_refunded_status.sql, add_customers_debt.sql, add_product_image_url.sql, add_category_image_url.sql instead.
 
 -- =============================================================================
 -- 1. EXTENSION
@@ -16,6 +16,7 @@ create extension if not exists "uuid-ossp";
 create table if not exists categories (
   id uuid primary key default uuid_generate_v4(),
   name text not null,
+  image_url text,
   created_at timestamptz default now()
 );
 

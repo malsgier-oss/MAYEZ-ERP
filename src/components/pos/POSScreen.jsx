@@ -1,27 +1,38 @@
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useCartStore } from '../../store/cartStore'
 import { useProducts } from '../../hooks/useProducts'
+import { useCategories } from '../../hooks/useCategories'
 import { useCustomers } from '../../hooks/useCustomers'
 import Cart from './Cart'
+import CategoryGrid from './CategoryGrid'
 import ProductSearch from './ProductSearch'
 import PaymentModal from './PaymentModal'
 import CustomerSelectModal from './CustomerSelectModal'
 import { formatCurrency } from '../../utils/currency'
+import { t } from '../../utils/i18n'
 import { createInvoiceWithItems, getNextInvoiceNumber, recordStockMovement, recordPayment } from '../../hooks/useInvoices'
 import { supabase } from '../../lib/supabase'
 
 export default function POSScreen() {
   const navigate = useNavigate()
   const { products, loading } = useProducts()
+  const { categories, loading: categoriesLoading } = useCategories()
   const { customers } = useCustomers()
   const { items, customerId, customerName, discountAmount, discountPercentage, clearCart } = useCartStore()
+  const [selectedCategoryId, setSelectedCategoryId] = useState(null)
   const [showPayment, setShowPayment] = useState(false)
   const [showCustomerSelect, setShowCustomerSelect] = useState(false)
   const [showDiscount, setShowDiscount] = useState(false)
   const [processing, setProcessing] = useState(false)
   const [toast, setToast] = useState(null)
   const [lastCreatedInvoice, setLastCreatedInvoice] = useState(null)
+
+  const productsToShow = useMemo(() => {
+    if (selectedCategoryId === null) return []
+    if (selectedCategoryId === 'all') return products
+    return products.filter((p) => p.category_id === selectedCategoryId)
+  }, [products, selectedCategoryId])
 
   const subtotal = items.reduce((sum, i) => sum + Number(i.lineTotal), 0)
   const discount = discountAmount ?? (subtotal * (discountPercentage ?? 0)) / 100
@@ -68,7 +79,7 @@ export default function POSScreen() {
       clearCart()
       setShowPayment(false)
       setLastCreatedInvoice({ id: created.id, invoice_number: invoiceNumber })
-      setToast({ type: 'success', message: `Invoice ${invoiceNumber} created` })
+      setToast({ type: 'success', message: t('pos.invoice_created').replace('{number}', invoiceNumber) })
       setTimeout(() => setToast(null), 3000)
     } catch (err) {
       setToast({ type: 'error', message: err.message || 'Failed to create invoice' })
@@ -91,17 +102,29 @@ export default function POSScreen() {
             onClick={() => setShowCustomerSelect(true)}
             className="px-4 py-3 bg-slate-200 hover:bg-slate-300 rounded-xl font-medium touch-target"
           >
-            {customerName || 'Select Customer'}
+            {customerName || t('pos.select_customer')}
           </button>
           <button
             type="button"
             onClick={() => setShowDiscount(true)}
             className="px-4 py-3 bg-slate-200 hover:bg-slate-300 rounded-xl font-medium touch-target"
           >
-            Discount
+            {t('pos.discount')}
           </button>
         </div>
-        <ProductSearch products={products} loading={loading} />
+        {selectedCategoryId === null ? (
+          <CategoryGrid
+            categories={categories}
+            loading={categoriesLoading}
+            onSelectCategory={setSelectedCategoryId}
+          />
+        ) : (
+          <ProductSearch
+            products={productsToShow}
+            loading={loading}
+            onBackToCategories={() => setSelectedCategoryId(null)}
+          />
+        )}
       </div>
       <div className="w-full lg:w-96 flex-shrink-0 flex flex-col gap-4">
         <Cart />
@@ -112,7 +135,7 @@ export default function POSScreen() {
             disabled={!canComplete}
             className="flex-1 py-4 bg-green-600 hover:bg-green-700 disabled:bg-slate-300 disabled:cursor-not-allowed text-white font-bold text-lg rounded-xl touch-target-lg"
           >
-            Cash
+            {t('pos.cash')}
           </button>
           <button
             type="button"
@@ -120,7 +143,7 @@ export default function POSScreen() {
             disabled={!canComplete}
             className="flex-1 py-4 bg-blue-600 hover:bg-blue-700 disabled:bg-slate-300 disabled:cursor-not-allowed text-white font-bold text-lg rounded-xl touch-target-lg"
           >
-            Credit
+            {t('pos.credit')}
           </button>
         </div>
       </div>
@@ -167,8 +190,8 @@ export default function POSScreen() {
       {lastCreatedInvoice && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-xl p-6 max-w-sm w-full shadow-xl">
-            <h3 className="text-lg font-semibold mb-2 text-green-700">Sale complete</h3>
-            <p className="text-slate-600 mb-4">Invoice {lastCreatedInvoice.invoice_number} created.</p>
+            <h3 className="text-lg font-semibold mb-2 text-green-700">{t('pos.sale_complete')}</h3>
+            <p className="text-slate-600 mb-4">{t('pos.invoice_created').replace('{number}', lastCreatedInvoice.invoice_number)}.</p>
             <div className="flex flex-col gap-2">
               <button
                 type="button"
@@ -178,14 +201,14 @@ export default function POSScreen() {
                 }}
                 className="w-full py-3 bg-slate-700 text-white rounded-xl font-medium touch-target"
               >
-                Print receipt
+                {t('pos.print_receipt')}
               </button>
               <button
                 type="button"
                 onClick={() => setLastCreatedInvoice(null)}
                 className="w-full py-3 border border-slate-300 rounded-xl font-medium touch-target"
               >
-                Done
+                {t('pos.done')}
               </button>
             </div>
           </div>
@@ -201,10 +224,10 @@ function DiscountModal({ onApply, onClose }) {
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
       <div className="bg-white rounded-xl p-6 max-w-sm w-full">
-        <h3 className="text-lg font-semibold mb-4">Apply discount</h3>
+        <h3 className="text-lg font-semibold mb-4">{t('pos.apply_discount')}</h3>
         <div className="space-y-3">
           <label className="block">
-            <span className="text-sm text-slate-600">Fixed amount</span>
+            <span className="text-sm text-slate-600">{t('pos.fixed_amount')}</span>
             <input
               type="number"
               step="0.01"
@@ -214,7 +237,7 @@ function DiscountModal({ onApply, onClose }) {
             />
           </label>
           <label className="block">
-            <span className="text-sm text-slate-600">Percentage</span>
+            <span className="text-sm text-slate-600">{t('pos.percentage')}</span>
             <input
               type="number"
               step="0.1"
@@ -226,14 +249,14 @@ function DiscountModal({ onApply, onClose }) {
         </div>
         <div className="flex gap-2 mt-6">
           <button type="button" onClick={onClose} className="flex-1 py-2 border rounded-lg">
-            Cancel
+            {t('common.cancel')}
           </button>
           <button
             type="button"
             onClick={() => onApply(parseFloat(amount) || 0, parseFloat(pct) || 0)}
             className="flex-1 py-2 bg-blue-600 text-white rounded-lg"
           >
-            Apply
+            {t('pos.apply')}
           </button>
         </div>
       </div>
