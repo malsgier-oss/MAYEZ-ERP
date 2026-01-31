@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { supabase } from '../lib/supabase'
 
 const FETCH_TIMEOUT_MS = 15_000
@@ -15,7 +15,7 @@ export function useCategories() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
 
-  const fetchCategories = async () => {
+  const fetchCategories = useCallback(async () => {
     setLoading(true)
     setError(null)
     try {
@@ -36,11 +36,11 @@ export function useCategories() {
     } finally {
       setLoading(false)
     }
-  }
+  }, [])
 
   useEffect(() => {
     fetchCategories()
-  }, [])
+  }, [fetchCategories])
 
   const addCategory = async (name) => {
     const { data, error: e } = await supabase
