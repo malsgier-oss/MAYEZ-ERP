@@ -55,7 +55,7 @@ export default function POSScreen() {
         const num = last ? parseInt(String(last.invoice_number).replace(/\D/g, ''), 10) + 1 : 1
         invoiceNumber = 'INV-' + String(num).padStart(5, '0')
       }
-      const invoiceCustomerId = customerId || (method === 'credit' ? await createWalkInCustomer() : null)
+      const invoiceCustomerId = customerId || (await createWalkInCustomer())
       const invoice = {
         invoice_number: invoiceNumber,
         customer_id: invoiceCustomerId,

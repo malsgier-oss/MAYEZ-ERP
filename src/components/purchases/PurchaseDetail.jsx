@@ -12,6 +12,7 @@ export default function PurchaseDetail() {
   const hasAutoPrinted = useRef(false)
   const [purchase, setPurchase] = useState(null)
   const [items, setItems] = useState([])
+  const [payments, setPayments] = useState([])
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
@@ -28,6 +29,12 @@ export default function PurchaseDetail() {
         .eq('purchase_id', id)
         .order('created_at')
       setItems(it || [])
+      const { data: pay } = await supabase
+        .from('supplier_payments')
+        .select('*')
+        .eq('purchase_id', id)
+        .order('payment_date', { ascending: false })
+      setPayments(pay || [])
       setLoading(false)
     }
     if (id) load()
@@ -147,6 +154,19 @@ export default function PurchaseDetail() {
           <div className="mt-6 pt-6 border-t">
             <h3 className="font-semibold mb-2">{t('suppliers.notes')}</h3>
             <p className="text-sm text-slate-600">{purchase.notes}</p>
+          </div>
+        )}
+        {payments.length > 0 && (
+          <div className="mt-6 pt-6 border-t">
+            <h3 className="font-semibold mb-2">{t('invoice.payment_history')}</h3>
+            <ul className="space-y-1 text-sm text-slate-600">
+              {payments.map((p, i) => (
+                <li key={i}>
+                  {formatDate(p.payment_date)} — {formatCurrency(p.amount)} ({p.payment_method === 'cash' ? t('invoice.payment_method_cash') : p.payment_method.replace('_', ' ')})
+                  {p.notes && ` — ${p.notes}`}
+                </li>
+              ))}
+            </ul>
           </div>
         )}
       </div>

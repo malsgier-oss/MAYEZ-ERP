@@ -13,6 +13,7 @@ export default function SupplierDetail() {
   const { fetchSuppliers } = useSuppliers()
   const [supplier, setSupplier] = useState(null)
   const [purchases, setPurchases] = useState([])
+  const [payments, setPayments] = useState([])
   const [loading, setLoading] = useState(true)
   const [showPayment, setShowPayment] = useState(false)
   const [paymentAmount, setPaymentAmount] = useState('')
@@ -30,6 +31,12 @@ export default function SupplierDetail() {
         .order('purchase_date', { ascending: false })
         .limit(50)
       setPurchases(pur || [])
+      const { data: pay } = await supabase
+        .from('supplier_payments')
+        .select('*, purchases(purchase_number)')
+        .eq('supplier_id', id)
+        .order('payment_date', { ascending: false })
+      setPayments(pay || [])
       setLoading(false)
     }
     if (id && id !== 'new') load()
@@ -55,6 +62,12 @@ export default function SupplierDetail() {
       setShowPayment(false)
       const { data: s } = await supabase.from('suppliers').select('*').eq('id', id).single()
       setSupplier(s || null)
+      const { data: pay } = await supabase
+        .from('supplier_payments')
+        .select('*, purchases(purchase_number)')
+        .eq('supplier_id', id)
+        .order('payment_date', { ascending: false })
+      setPayments(pay || [])
       fetchSuppliers()
     } catch (err) {
       setError(err.message || t('supplier_detail.failed_payment'))
@@ -170,6 +183,46 @@ export default function SupplierDetail() {
         </div>
         {purchases.length === 0 && (
           <p className="p-8 text-center text-slate-500">{t('supplier_detail.no_purchases')}</p>
+        )}
+      </div>
+
+      <div className="mt-8 bg-white rounded-xl shadow border overflow-hidden">
+        <h2 className="text-lg font-semibold p-4 border-b">{t('invoice.payment_history')}</h2>
+        {payments.length > 0 ? (
+          <div className="overflow-x-auto">
+            <table className="w-full">
+              <thead className="bg-slate-50">
+                <tr>
+                  <th className="text-left p-3 font-medium">{t('purchase.payment_date')}</th>
+                  <th className="text-right p-3 font-medium">{t('purchase.amount')}</th>
+                  <th className="text-left p-3 font-medium">{t('purchase.payment_method')}</th>
+                  <th className="text-left p-3 font-medium">{t('purchase.purchase_number_label').replace(' {number}', '')}</th>
+                  <th className="text-left p-3 font-medium">{t('suppliers.notes')}</th>
+                </tr>
+              </thead>
+              <tbody>
+                {payments.map((pay) => (
+                  <tr key={pay.id} className="border-t border-slate-100">
+                    <td className="p-3">{formatDate(pay.payment_date)}</td>
+                    <td className="p-3 text-right font-medium">{formatCurrency(pay.amount)}</td>
+                    <td className="p-3 capitalize">{pay.payment_method.replace('_', ' ')}</td>
+                    <td className="p-3">
+                      {pay.purchases?.purchase_number ? (
+                        <Link to={`/purchases/${pay.purchase_id}`} className="text-blue-600 hover:underline">
+                          {pay.purchases.purchase_number}
+                        </Link>
+                      ) : (
+                        '—'
+                      )}
+                    </td>
+                    <td className="p-3">{pay.notes || '—'}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        ) : (
+          <p className="p-8 text-center text-slate-500">{t('supplier_detail.no_payments')}</p>
         )}
       </div>
 
