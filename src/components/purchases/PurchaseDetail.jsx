@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react'
-import { useParams, useNavigate, Link } from 'react-router-dom'
+import { useState, useEffect, useRef } from 'react'
+import { useParams, useNavigate, useSearchParams, Link } from 'react-router-dom'
 import { supabase } from '../../lib/supabase'
 import { formatCurrency } from '../../utils/currency'
 import { formatDate } from '../../utils/date'
@@ -8,6 +8,8 @@ import { t } from '../../utils/i18n'
 export default function PurchaseDetail() {
   const { id } = useParams()
   const navigate = useNavigate()
+  const [searchParams, setSearchParams] = useSearchParams()
+  const hasAutoPrinted = useRef(false)
   const [purchase, setPurchase] = useState(null)
   const [items, setItems] = useState([])
   const [loading, setLoading] = useState(true)
@@ -30,6 +32,16 @@ export default function PurchaseDetail() {
     }
     if (id) load()
   }, [id])
+
+  useEffect(() => {
+    if (!purchase || loading || hasAutoPrinted.current) return
+    if (searchParams.get('print') === '1') {
+      hasAutoPrinted.current = true
+      setSearchParams({}, { replace: true })
+      const timeoutId = setTimeout(() => window.print(), 150)
+      return () => clearTimeout(timeoutId)
+    }
+  }, [purchase, loading, searchParams, setSearchParams])
 
   const handlePrint = () => {
     window.print()

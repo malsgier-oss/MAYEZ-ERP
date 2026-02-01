@@ -22,6 +22,7 @@ export default function ReceiveStockScreen() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
   const [toast, setToast] = useState(null)
+  const [lastCreatedPurchase, setLastCreatedPurchase] = useState(null)
 
   const total = lines.reduce((sum, l) => sum + Number(l.line_total || 0), 0)
 
@@ -88,12 +89,9 @@ export default function ReceiveStockScreen() {
         unit_cost: Number(l.unit_cost) || 0,
         line_total: Number(l.line_total) || 0,
       }))
-      await createPurchaseWithItems(purchase, items, payMethod === 'credit')
+      const created = await createPurchaseWithItems(purchase, items, payMethod === 'credit')
+      setLastCreatedPurchase({ id: created.id, purchase_number: purchaseNumber })
       setToast(t('purchase.purchase_created').replace('{number}', purchaseNumber))
-      setTimeout(() => {
-        setToast(null)
-        navigate('/inventory')
-      }, 2000)
     } catch (err) {
       setError(err.message || t('purchase.failed_create'))
     } finally {
@@ -112,8 +110,40 @@ export default function ReceiveStockScreen() {
       {error && (
         <div className="mb-4 p-4 bg-red-50 text-red-700 rounded-lg">{error}</div>
       )}
-      {toast && (
+      {toast && !lastCreatedPurchase && (
         <div className="mb-4 p-4 bg-green-100 text-green-800 rounded-lg">{toast}</div>
+      )}
+      {lastCreatedPurchase && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-xl p-6 max-w-sm w-full shadow-xl">
+            <h3 className="text-lg font-semibold mb-2 text-green-700">{t('purchase.receive_complete')}</h3>
+            <p className="text-slate-600 mb-4">{t('purchase.purchase_created').replace('{number}', lastCreatedPurchase.purchase_number)}</p>
+            <div className="flex flex-col gap-2">
+              <button
+                type="button"
+                onClick={() => {
+                  navigate(`/purchases/${lastCreatedPurchase.id}?print=1`)
+                  setLastCreatedPurchase(null)
+                  setToast(null)
+                }}
+                className="w-full py-3 bg-slate-700 text-white rounded-xl font-medium touch-target"
+              >
+                {t('purchase.view_print_purchase')}
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setLastCreatedPurchase(null)
+                  setToast(null)
+                  navigate('/inventory')
+                }}
+                className="w-full py-3 border border-slate-300 rounded-xl font-medium touch-target"
+              >
+                {t('pos.done')}
+              </button>
+            </div>
+          </div>
+        </div>
       )}
       <form onSubmit={handleSubmit} className="max-w-4xl space-y-6">
         <div>
