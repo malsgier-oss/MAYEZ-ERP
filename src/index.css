@@ -25,3 +25,14 @@ button.touch-lg, .touch-target-lg {
 .no-scrollbar::-webkit-scrollbar {
   display: none;
 }
+
+/* Print: hide layout chrome so only receipt/content prints */
+@media print {
+  nav.print\:hidden,
+  .print\:hidden {
+    display: none !important;
+  }
+  main {
+    padding: 0 !important;
+  }
+}

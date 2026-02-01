@@ -38,13 +38,17 @@ export default function InvoiceDetail() {
   }, [id])
 
   useEffect(() => {
-    if (!invoice || hasAutoPrinted.current) return
+    if (!invoice || loading || hasAutoPrinted.current) return
     if (searchParams.get('print') === '1') {
       hasAutoPrinted.current = true
-      window.print()
       setSearchParams({}, { replace: true })
+      // Defer print until after receipt content is painted so the dialog shows the receipt, not "Loading..."
+      const id = setTimeout(() => {
+        window.print()
+      }, 150)
+      return () => clearTimeout(id)
     }
-  }, [invoice, searchParams, setSearchParams])
+  }, [invoice, loading, searchParams, setSearchParams])
 
   const handleRecordPayment = async (e) => {
     e.preventDefault()

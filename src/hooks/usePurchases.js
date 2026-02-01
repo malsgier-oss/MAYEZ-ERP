@@ -31,7 +31,7 @@ async function recordStockReceipt(productId, quantity, purchaseId) {
 
 /**
  * Create purchase with items, stock movements, and optionally increase supplier payable (credit).
- * @param {Object} purchase - { supplier_id, purchase_number, purchase_date, total_amount, paid_amount, status, notes }
+ * @param {Object} purchase - { supplier_id, purchase_number, purchase_date, total_amount, paid_amount, status, notes, supplier_invoice_number?, supplier_invoice_url? }
  * @param {Array} items - [{ product_id, product_name, quantity, unit_cost, line_total }]
  * @param {boolean} isCredit - if true, increase supplier payable by total_amount
  */

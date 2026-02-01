@@ -15,6 +15,7 @@ import SupplierList from './components/suppliers/SupplierList'
 import SupplierForm from './components/suppliers/SupplierForm'
 import SupplierDetail from './components/suppliers/SupplierDetail'
 import ReceiveStockScreen from './components/purchases/ReceiveStockScreen'
+import PurchaseDetail from './components/purchases/PurchaseDetail'
 import ReportsScreen from './components/reports/ReportsScreen'
 import SettingsScreen from './components/settings/SettingsScreen'
 
@@ -37,6 +38,7 @@ export default function App() {
         <Route path="suppliers/new" element={<SupplierForm />} />
         <Route path="suppliers/:id" element={<SupplierDetail />} />
         <Route path="purchases/new" element={<ReceiveStockScreen />} />
+        <Route path="purchases/:id" element={<PurchaseDetail />} />
         <Route path="inventory" element={<InventoryScreen />} />
         <Route path="reports" element={<ReportsScreen />} />
         <Route path="settings" element={<SettingsScreen />} />

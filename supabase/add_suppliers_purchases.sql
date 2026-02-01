@@ -37,6 +37,8 @@ create table if not exists purchases (
   paid_amount decimal(12,2) not null default 0,
   status purchase_status not null default 'unpaid',
   notes text,
+  supplier_invoice_number text,
+  supplier_invoice_url text,
   created_at timestamptz default now(),
   updated_at timestamptz default now()
 );

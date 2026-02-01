@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { useParams, useNavigate } from 'react-router-dom'
+import { useParams, useNavigate, Link } from 'react-router-dom'
 import { supabase } from '../../lib/supabase'
 import { formatCurrency } from '../../utils/currency'
 import { formatDate } from '../../utils/date'
@@ -119,6 +119,7 @@ export default function SupplierDetail() {
               <tr>
                 <th className="text-left p-3 font-medium">{t('purchase.payment_date')}</th>
                 <th className="text-left p-3 font-medium">#</th>
+                <th className="text-left p-3 font-medium">{t('purchase.supplier_invoice_number')}</th>
                 <th className="text-right p-3 font-medium">{t('pos.total')}</th>
                 <th className="text-right p-3 font-medium">{t('invoices.paid')}</th>
                 <th className="text-right p-3 font-medium">{t('invoice.status')}</th>
@@ -128,7 +129,30 @@ export default function SupplierDetail() {
               {purchases.map((pur) => (
                 <tr key={pur.id} className="border-t border-slate-100">
                   <td className="p-3">{formatDate(pur.purchase_date)}</td>
-                  <td className="p-3 font-medium">{pur.purchase_number}</td>
+                  <td className="p-3 font-medium">
+                    <Link to={`/purchases/${pur.id}`} className="text-blue-600 hover:underline">
+                      {pur.purchase_number}
+                    </Link>
+                  </td>
+                  <td className="p-3">
+                    {pur.supplier_invoice_number || pur.supplier_invoice_url ? (
+                      <span className="flex flex-wrap items-center gap-1">
+                        {pur.supplier_invoice_number && <span>{pur.supplier_invoice_number}</span>}
+                        {pur.supplier_invoice_url && (
+                          <a
+                            href={pur.supplier_invoice_url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-blue-600 hover:underline text-sm"
+                          >
+                            {t('common.view')}
+                          </a>
+                        )}
+                      </span>
+                    ) : (
+                      '—'
+                    )}
+                  </td>
                   <td className="p-3 text-right">{formatCurrency(pur.total_amount)}</td>
                   <td className="p-3 text-right">{formatCurrency(pur.paid_amount)}</td>
                   <td className="p-3 text-right">

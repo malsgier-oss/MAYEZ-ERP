@@ -17,6 +17,8 @@ export default function ReceiveStockScreen() {
   const [lines, setLines] = useState([emptyLine()])
   const [payMethod, setPayMethod] = useState('cash')
   const [notes, setNotes] = useState('')
+  const [supplierInvoiceNumber, setSupplierInvoiceNumber] = useState('')
+  const [supplierInvoiceUrl, setSupplierInvoiceUrl] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
   const [toast, setToast] = useState(null)
@@ -76,6 +78,8 @@ export default function ReceiveStockScreen() {
         paid_amount: payMethod === 'cash' ? total : 0,
         status: payMethod === 'cash' ? 'paid' : 'unpaid',
         notes: notes.trim() || null,
+        supplier_invoice_number: supplierInvoiceNumber.trim() || null,
+        supplier_invoice_url: supplierInvoiceUrl.trim() || null,
       }
       const items = validLines.map((l) => ({
         product_id: l.product_id,
@@ -226,6 +230,29 @@ export default function ReceiveStockScreen() {
               <span>{t('purchase.pay_later')}</span>
             </label>
           </fieldset>
+        </div>
+
+        <div className="grid gap-4 sm:grid-cols-2">
+          <div>
+            <label className="block text-sm font-medium text-slate-700 mb-1">{t('purchase.supplier_invoice_number')}</label>
+            <input
+              type="text"
+              value={supplierInvoiceNumber}
+              onChange={(e) => setSupplierInvoiceNumber(e.target.value)}
+              placeholder={t('purchase.supplier_invoice_optional')}
+              className="w-full px-4 py-2 border rounded-lg"
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-slate-700 mb-1">{t('purchase.supplier_invoice_url')}</label>
+            <input
+              type="url"
+              value={supplierInvoiceUrl}
+              onChange={(e) => setSupplierInvoiceUrl(e.target.value)}
+              placeholder={t('purchase.supplier_invoice_optional')}
+              className="w-full px-4 py-2 border rounded-lg"
+            />
+          </div>
         </div>
 
         <div>

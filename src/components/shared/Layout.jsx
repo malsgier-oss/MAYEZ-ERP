@@ -52,7 +52,7 @@ export default function Layout() {
     <div className="min-h-screen flex flex-col md:flex-row">
       {/* Side nav: desktop/tablet only */}
       {!isMobile && (
-        <nav className="md:w-20 lg:w-48 md:min-h-screen bg-slate-800 text-white flex md:flex-col items-center justify-around md:justify-start md:pt-6 md:gap-2 py-2 px-2 flex-shrink-0">
+        <nav className="md:w-20 lg:w-48 md:min-h-screen bg-slate-800 text-white flex md:flex-col items-center justify-around md:justify-start md:pt-6 md:gap-2 py-2 px-2 flex-shrink-0 print:hidden">
           <div className="hidden md:block text-lg font-bold mb-4 px-2">MAYEZ</div>
           {navItems.map((item) => {
             const isActive = location.pathname === item.path || (item.path !== '/' && location.pathname.startsWith(item.path))
@@ -80,7 +80,7 @@ export default function Layout() {
       >
         {/* Phone: top bar with logo */}
         {isMobile && (
-          <div className="flex items-center justify-center py-3 mb-2 -mt-2 -mx-4 px-4 bg-slate-800 text-white md:hidden">
+          <div className="flex items-center justify-center py-3 mb-2 -mt-2 -mx-4 px-4 bg-slate-800 text-white md:hidden print:hidden">
             <span className="text-lg font-bold">MAYEZ</span>
           </div>
         )}
@@ -90,7 +90,7 @@ export default function Layout() {
       {/* Bottom nav: phone only */}
       {isMobile && (
         <nav
-          className="fixed bottom-0 left-0 right-0 z-50 bg-slate-800 text-white border-t border-slate-700 md:hidden flex items-stretch overflow-x-auto overflow-y-hidden no-scrollbar"
+          className="fixed bottom-0 left-0 right-0 z-50 bg-slate-800 text-white border-t border-slate-700 md:hidden flex items-stretch overflow-x-auto overflow-y-hidden no-scrollbar print:hidden"
           style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}
         >
           <div className="flex items-stretch min-w-full justify-around flex-1">
